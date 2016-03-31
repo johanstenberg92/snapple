@@ -21,17 +21,9 @@ object SnappleBuild extends Build {
     base = file(".")
   )
 
-  lazy val crdtsDependencies = Seq(
-    libraryDependencies ++= Seq(
-      Dependencies.scalaTest
-    )
-  )
-
-  lazy val crdts = Project(id = "snapple-crdts", base = file("snapple-crdts"))
-    .settings(crdtsDependencies: _*)
-
   lazy val keyValueStoreDependencies = Seq(
     libraryDependencies ++= Seq(
+      Dependencies.scalaTest,
       Dependencies.grizzledLogging,
       Dependencies.thrift
     )
@@ -39,6 +31,5 @@ object SnappleBuild extends Build {
 
   lazy val keyValueStore = Project(id = "snapple-key-value-store", base = file("snapple-key-value-store"))
     .settings(keyValueStoreDependencies: _*)
-    .dependsOn(crdts % "test->test;compile->compile")
 
 }

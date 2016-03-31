@@ -31,11 +31,11 @@ case class ClusterServiceHandler() extends ClusterService.Iface {
   private val logger = Logger[this.type]
 
   override def ping() {
-    logger.info("received ping!")
+    logger.info("received ping")
   }
 
-  override def propagate(orsets: JMap[String, TORSet]): Boolean = {
-    logger.info(s"received $orsets")
+  override def propagate(orsets: JMap[String, TDataType]): Boolean = {
+    logger.info(s"received propagation")
     true
   }
 

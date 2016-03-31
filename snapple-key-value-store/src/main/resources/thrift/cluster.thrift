@@ -1,15 +1,17 @@
 namespace java snapple.kv.io
 
-# We will need ORSet as struct here
+union TDataType {
+  1: TORSet orset;
+}
 
 struct TORSet {
-  1: i32 test = 0
+  1: i32 test;
 }
 
 service ClusterService {
 
   void ping(),
 
-  bool propagate(1: map<string, TORSet> orsets)
+  bool propagate(1: map<string, TDataType> values)
 
 }

@@ -5,11 +5,9 @@ import grizzled.slf4j.Logger
 import org.apache.thrift.TException
 import org.apache.thrift.transport.TNonblockingSocket
 import org.apache.thrift.protocol.TBinaryProtocol
-import org.apache.thrift.async.TAsyncClientManager
+import org.apache.thrift.async.{TAsyncClientManager, AsyncMethodCallback}
 
 case class ClusterClient(hostname: String, port: Int) {
-
-  private val
 
   private val logger = Logger[this.type]
 
@@ -26,4 +24,20 @@ case class ClusterClient(hostname: String, port: Int) {
 
     client
   }
+
+  def ping(lambda: Boolean => Unit): Unit = client.ping(PingMethodCallback(lambda))
+
+  case class PingMethodCallback(lambda: Boolean => Unit) extends AsyncMethodCallback[ClusterService.AsyncClient.ping_call] {
+
+    override def onComplete(result: ClusterService.AsyncClient.ping_call): Unit = {
+      logger.info(s"successfully pinged $hostname:$port")
+      lambda(true)
+    }
+
+    override def onError(error: Exception): Unit = {
+      logger.error(s"error pinging $hostname:$port", error)
+      lambda(false)
+    }
+  }
+
 }
