@@ -20,7 +20,7 @@ object Configuration {
 
   lazy val StdOutputLogging = sys.env.get("SNAPPLE_STD_OUTPUT_LOGGING") == Some("true")
 
-  lazy val ClusterHosts: List[(String, Int)] = try {
+  lazy val ReplicaAddresses: List[(String, Int)] = try {
     sys.env.get("SNAPPLE_CLUSTER_HOSTS").map {
       case s =>
         s.split(",").toList.map {

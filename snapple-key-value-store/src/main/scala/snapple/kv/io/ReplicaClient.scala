@@ -7,7 +7,7 @@ import org.apache.thrift.transport.TNonblockingSocket
 import org.apache.thrift.protocol.TBinaryProtocol
 import org.apache.thrift.async.{TAsyncClientManager, AsyncMethodCallback}
 
-case class ClusterClient(hostname: String, port: Int) {
+case class ReplicaClient(hostname: String, port: Int) {
 
   private val logger = Logger[this.type]
 
@@ -20,7 +20,7 @@ case class ClusterClient(hostname: String, port: Int) {
 
     val client = new ClusterService.AsyncClient(protocolFactory, clientManager, transport)
 
-    logger.info(s"connected cluster client to $hostname:$port")
+    logger.info(s"connected replica client to $hostname:$port")
 
     client
   }

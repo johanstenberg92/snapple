@@ -14,9 +14,11 @@ object VersionVector {
   }
 }
 
-case class VersionVector(private val versions: Map[String, Long] = Map.empty) {
+case class VersionVector(private val versions: Map[String, Long] = Map.empty) extends DataType {
 
   import VersionVector._
+
+  override type S = VersionVector
 
   def +(host: String): VersionVector = {
     val value = Timestamp.counter.getAndIncrement
@@ -29,7 +31,7 @@ case class VersionVector(private val versions: Map[String, Long] = Map.empty) {
 
   def contains(host: String): Boolean = versions.contains(host)
 
-  def merge(that: VersionVector): VersionVector = {
+  override def merge(that: VersionVector): VersionVector = {
     var merged = that.versions
 
     versions.foreach {

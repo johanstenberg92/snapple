@@ -37,10 +37,12 @@ import org.slf4j.LoggerFactory;
 public class TDataType extends org.apache.thrift.TUnion<TDataType, TDataType._Fields> {
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("TDataType");
   private static final org.apache.thrift.protocol.TField ORSET_FIELD_DESC = new org.apache.thrift.protocol.TField("orset", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+  private static final org.apache.thrift.protocol.TField VERSION_VECTOR_FIELD_DESC = new org.apache.thrift.protocol.TField("versionVector", org.apache.thrift.protocol.TType.STRUCT, (short)2);
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-    ORSET((short)1, "orset");
+    ORSET((short)1, "orset"),
+    VERSION_VECTOR((short)2, "versionVector");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -57,6 +59,8 @@ public class TDataType extends org.apache.thrift.TUnion<TDataType, TDataType._Fi
       switch(fieldId) {
         case 1: // ORSET
           return ORSET;
+        case 2: // VERSION_VECTOR
+          return VERSION_VECTOR;
         default:
           return null;
       }
@@ -99,8 +103,10 @@ public class TDataType extends org.apache.thrift.TUnion<TDataType, TDataType._Fi
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
-    tmpMap.put(_Fields.ORSET, new org.apache.thrift.meta_data.FieldMetaData("orset", org.apache.thrift.TFieldRequirementType.DEFAULT,
+    tmpMap.put(_Fields.ORSET, new org.apache.thrift.meta_data.FieldMetaData("orset", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT        , "TORSet")));
+    tmpMap.put(_Fields.VERSION_VECTOR, new org.apache.thrift.meta_data.FieldMetaData("versionVector", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT        , "TVersionVector")));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(TDataType.class, metaDataMap);
   }
@@ -126,6 +132,12 @@ public class TDataType extends org.apache.thrift.TUnion<TDataType, TDataType._Fi
     return x;
   }
 
+  public static TDataType versionVector(TVersionVector value) {
+    TDataType x = new TDataType();
+    x.setVersionVector(value);
+    return x;
+  }
+
 
   @Override
   protected void checkType(_Fields setField, Object value) throws ClassCastException {
@@ -135,6 +147,11 @@ public class TDataType extends org.apache.thrift.TUnion<TDataType, TDataType._Fi
           break;
         }
         throw new ClassCastException("Was expecting value of type TORSet for field 'orset', but got " + value.getClass().getSimpleName());
+      case VERSION_VECTOR:
+        if (value instanceof TVersionVector) {
+          break;
+        }
+        throw new ClassCastException("Was expecting value of type TVersionVector for field 'versionVector', but got " + value.getClass().getSimpleName());
       default:
         throw new IllegalArgumentException("Unknown field id " + setField);
     }
@@ -155,6 +172,16 @@ public class TDataType extends org.apache.thrift.TUnion<TDataType, TDataType._Fi
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, field.type);
             return null;
           }
+        case VERSION_VECTOR:
+          if (field.type == VERSION_VECTOR_FIELD_DESC.type) {
+            TVersionVector versionVector;
+            versionVector = new TVersionVector();
+            versionVector.read(iprot);
+            return versionVector;
+          } else {
+            org.apache.thrift.protocol.TProtocolUtil.skip(iprot, field.type);
+            return null;
+          }
         default:
           throw new IllegalStateException("setField wasn't null, but didn't match any of the case statements!");
       }
@@ -171,6 +198,10 @@ public class TDataType extends org.apache.thrift.TUnion<TDataType, TDataType._Fi
         TORSet orset = (TORSet)value_;
         orset.write(oprot);
         return;
+      case VERSION_VECTOR:
+        TVersionVector versionVector = (TVersionVector)value_;
+        versionVector.write(oprot);
+        return;
       default:
         throw new IllegalStateException("Cannot write union with unknown field " + setField_);
     }
@@ -186,6 +217,11 @@ public class TDataType extends org.apache.thrift.TUnion<TDataType, TDataType._Fi
           orset = new TORSet();
           orset.read(iprot);
           return orset;
+        case VERSION_VECTOR:
+          TVersionVector versionVector;
+          versionVector = new TVersionVector();
+          versionVector.read(iprot);
+          return versionVector;
         default:
           throw new IllegalStateException("setField wasn't null, but didn't match any of the case statements!");
       }
@@ -201,6 +237,10 @@ public class TDataType extends org.apache.thrift.TUnion<TDataType, TDataType._Fi
         TORSet orset = (TORSet)value_;
         orset.write(oprot);
         return;
+      case VERSION_VECTOR:
+        TVersionVector versionVector = (TVersionVector)value_;
+        versionVector.write(oprot);
+        return;
       default:
         throw new IllegalStateException("Cannot write union with unknown field " + setField_);
     }
@@ -211,6 +251,8 @@ public class TDataType extends org.apache.thrift.TUnion<TDataType, TDataType._Fi
     switch (setField) {
       case ORSET:
         return ORSET_FIELD_DESC;
+      case VERSION_VECTOR:
+        return VERSION_VECTOR_FIELD_DESC;
       default:
         throw new IllegalArgumentException("Unknown field id " + setField);
     }
@@ -245,8 +287,27 @@ public class TDataType extends org.apache.thrift.TUnion<TDataType, TDataType._Fi
     value_ = value;
   }
 
+  public TVersionVector getVersionVector() {
+    if (getSetField() == _Fields.VERSION_VECTOR) {
+      return (TVersionVector)getFieldValue();
+    } else {
+      throw new RuntimeException("Cannot get field 'versionVector' because union is currently set to " + getFieldDesc(getSetField()).name);
+    }
+  }
+
+  public void setVersionVector(TVersionVector value) {
+    if (value == null) throw new NullPointerException();
+    setField_ = _Fields.VERSION_VECTOR;
+    value_ = value;
+  }
+
   public boolean isSetOrset() {
     return setField_ == _Fields.ORSET;
+  }
+
+
+  public boolean isSetVersionVector() {
+    return setField_ == _Fields.VERSION_VECTOR;
   }
 
 

@@ -8,6 +8,5 @@ trait DataType {
 
   def merge(that: S): S
 
-  def serialize: TDataType
-
 }
+

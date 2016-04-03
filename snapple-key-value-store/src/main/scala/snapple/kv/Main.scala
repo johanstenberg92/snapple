@@ -1,16 +1,17 @@
 package snapple.kv
 
 import snapple.kv.utils.Configuration
-import snapple.kv.io.{ClusterClient, ClusterServer}
+import snapple.kv.io.{ReplicaServer, ReplicaClient}
 
 object Main {
 
   def main(args: Array[String]): Unit = {
-    val server = ClusterServer(Configuration.Port)
-    val clients = Configuration.ClusterHosts.map {
-      case (hostname, port) => ClusterClient(hostname, port)
+    val server = ReplicaServer(Configuration.Port)
+
+    val clients = Configuration.ReplicaAddresses.map {
+      case (hostname, port) ⇒ ReplicaClient(hostname, port)
     }
 
-
+    val store = KeyValueStore()
   }
 }

@@ -7,7 +7,7 @@ import java.util.{Map => JMap}
 import org.apache.thrift.server.TNonblockingServer;
 import org.apache.thrift.transport.TNonblockingServerSocket;
 
-case class ClusterServer(port: Int) {
+case class ReplicaServer(port: Int) {
 
   private val logger = Logger[this.type]
 
@@ -20,7 +20,7 @@ case class ClusterServer(port: Int) {
     val server = new TNonblockingServer(new TNonblockingServer.Args(serverTransport).processor(processor))
 
     server.serve
-    logger.info(s"started cluster service on port $port")
+    logger.info(s"started replica server on port $port")
 
     server
   }

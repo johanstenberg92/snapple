@@ -17,12 +17,26 @@ case class ORSet[T](
 
   def contains(element: T): Boolean = elementsMap.contains(element)
 
-  def +(host: String, element: T): ORSet[T] = ???
+  def +(host: String, element: T): ORSet[T] = {
+    val newVersionVector = versionVector + host
+    val newDot = VersionVector(host, newVersionVector.versionAt(host))
+    ORSet(elementsMap.updated(element, newDot), newVersionVector)
+  }
 
-  def -(host: String, element: T): ORSet[T] = ???
+  def -(host: String, element: T): ORSet[T] =
+    copy(elementsMap = elementsMap - element)
 
-  override def merge(that: ORSet[T]): ORSet[T] = ???
+  def clear: ORSet[T] =
+    copy(elementsMap = Map.empty)
 
-  override def serialize: TDataType = ???
+  override def merge(that: ORSet[T]): ORSet[T] =
+    if (this == that) this
+    else {
+      val commonKeys = elementsMap.keysIterator.filter(that.elementsMap.contains)
+      val mergedVector = versionVector.merge(that.versionVector)
+      // Inspiration here:
+      // https://github.com/akka/akka/blob/master/akka-distributed-data/src/main/scala/akka/cluster/ddata/ORSet.scala#L289
+      ???
+    }
 
 }
