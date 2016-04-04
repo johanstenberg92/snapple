@@ -1,4 +1,4 @@
-package snapple.kv.io
+package snapple.kv.io.thrift
 
 trait ThriftSerializable {
 

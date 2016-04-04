@@ -8,3 +8,23 @@ union TElementType {
   5: double doubleValue,
   6: string stringValue
 }
+
+union TDataType {
+  1: TORSet orset,
+  2: TVersionVector versionVector
+}
+
+struct TORSet {
+  1: map<TElementType, TVersionVector> elementsMap,
+  2: TVersionVector versionVector
+}
+
+struct TVersionVector {
+  1: map<string, i64> versions
+}
+
+service SnappleService {
+
+  void ping()
+
+}

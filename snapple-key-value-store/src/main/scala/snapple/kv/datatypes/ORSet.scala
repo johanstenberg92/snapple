@@ -1,7 +1,5 @@
 package snapple.kv.datatypes
 
-import snapple.kv.io.TDataType
-
 case class ORSet[T](
   private val elementsMap: Map[T, VersionVector],
   private val versionVector: VersionVector

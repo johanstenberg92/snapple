@@ -1,5 +1,7 @@
 package snapple.kv.io
 
+import snapple.kv.io.thrift.{ReplicaService, SnappleService}
+
 import grizzled.slf4j.Logger
 
 import org.apache.thrift.TException
@@ -11,14 +13,14 @@ case class ReplicaClient(hostname: String, port: Int) {
 
   private val logger = Logger[this.type]
 
-  private var optionalClient: Option[ClusterService.AsyncClient] = None
+  private var optionalClient: Option[ReplicaService.AsyncClient] = None
 
-  private def client: ClusterService.AsyncClient = optionalClient.getOrElse {
+  private def client: ReplicaService.AsyncClient = optionalClient.getOrElse {
     val protocolFactory = new TBinaryProtocol.Factory
     val clientManager = new TAsyncClientManager
     val transport = new TNonblockingSocket(hostname, port)
 
-    val client = new ClusterService.AsyncClient(protocolFactory, clientManager, transport)
+    val client = new ReplicaService.AsyncClient(protocolFactory, clientManager, transport)
 
     logger.info(s"connected replica client to $hostname:$port")
 
@@ -27,9 +29,9 @@ case class ReplicaClient(hostname: String, port: Int) {
 
   def ping(lambda: Boolean => Unit): Unit = client.ping(PingMethodCallback(lambda))
 
-  case class PingMethodCallback(lambda: Boolean => Unit) extends AsyncMethodCallback[ClusterService.AsyncClient.ping_call] {
+  case class PingMethodCallback(lambda: Boolean => Unit) extends AsyncMethodCallback[SnappleService.AsyncClient.ping_call] {
 
-    override def onComplete(result: ClusterService.AsyncClient.ping_call): Unit = {
+    override def onComplete(result: SnappleService.AsyncClient.ping_call): Unit = {
       logger.info(s"successfully pinged $hostname:$port")
       lambda(true)
     }

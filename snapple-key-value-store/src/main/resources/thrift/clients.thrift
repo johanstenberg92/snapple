@@ -1,22 +1,26 @@
 namespace java snapple.kv.io.thrift
 
-import "base.thrift"
+include "base.thrift"
 
-struct TElementTypeOption {
+struct TOptionalElementType {
   1: optional base.TElementType elementType
 }
 
-service ClientService {
+struct TOptionalString {
+  1: optional string s
+}
 
-  void ping(),
+struct TOptionalDataType {
+  1: optional base.TDataType dataType
+}
 
-  # need optional elementType
-  bool createEntry(1: string key, 2: string datatype, 3: string elementType),
+service ClientService extends base.SnappleService {
+
+  bool createEntry(1: string key, 2: string dataType, 3: TOptionalString elementType),
 
   bool removeEntry(1: string key),
 
-  bool getEntry(1: string key),
+  TOptionalDataType getEntry(1: string key),
 
-  # need optional e
-  bool modifyEntry(1: string key, 2: string operation, 3: TElementTypeOption)
+  bool modifyEntry(1: string key, 2: string operation, 3: TOptionalElementType element)
 }

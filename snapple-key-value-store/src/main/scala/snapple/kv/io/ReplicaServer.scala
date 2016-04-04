@@ -1,19 +1,21 @@
 package snapple.kv.io
 
+import snapple.kv.io.thrift.{TDataType, ReplicaService}
+
 import grizzled.slf4j.Logger
 
 import java.util.{Map => JMap}
 
-import org.apache.thrift.server.TNonblockingServer;
-import org.apache.thrift.transport.TNonblockingServerSocket;
+import org.apache.thrift.server.TNonblockingServer
+import org.apache.thrift.transport.TNonblockingServerSocket
 
 case class ReplicaServer(port: Int) {
 
   private val logger = Logger[this.type]
 
-  private val handler = new ClusterServiceHandler
+  private val handler = new ReplicaServiceHandler
 
-  private val processor = new ClusterService.Processor(handler)
+  private val processor = new ReplicaService.Processor(handler)
 
   private val server = {
     val serverTransport = new TNonblockingServerSocket(port)
@@ -26,12 +28,12 @@ case class ReplicaServer(port: Int) {
   }
 }
 
-case class ClusterServiceHandler() extends ClusterService.Iface {
+case class ReplicaServiceHandler() extends ReplicaService.Iface {
 
   private val logger = Logger[this.type]
 
-  override def ping() {
-    logger.info("received ping")
+  override def ping(): Unit = {
+    logger.info("replica server received ping")
   }
 
   override def propagate(orsets: JMap[String, TDataType]): Boolean = {
