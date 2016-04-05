@@ -12,7 +12,7 @@ object SnappleBuild extends Build {
     organization := Organization,
     version := Version,
     scalaVersion := Dependencies.Versions.Scala,
-    shellPrompt := { s => Project.extract(s).currentProject.id + " > " },
+    shellPrompt := { s ⇒ Project.extract(s).currentProject.id + " > " },
     scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")
   )
 
@@ -21,7 +21,7 @@ object SnappleBuild extends Build {
     base = file(".")
   )
 
-  lazy val keyValueStoreDependencies = Seq(
+  lazy val coreSettings = Seq(
     libraryDependencies ++= Seq(
       Dependencies.scalaTest,
       Dependencies.grizzledLogging,
@@ -29,7 +29,21 @@ object SnappleBuild extends Build {
     )
   )
 
-  lazy val keyValueStore = Project(id = "snapple-key-value-store", base = file("snapple-key-value-store"))
-    .settings(keyValueStoreDependencies: _*)
+  lazy val core = Project(
+    id = "snapple-core",
+    base = file("snapple-core")
+  ).settings(coreSettings: _*)
+
+  lazy val cluster = Project(
+    id = "snapple-cluster",
+    base = file("snapple-cluster"),
+    dependencies = Seq(core)
+  )
+
+  lazy val remote = Project(
+    id = "snapple-remote",
+    base = file("snapple-remote"),
+    dependencies = Seq(core)
+  )
 
 }
