@@ -1,6 +1,6 @@
-package snapple.kv.io
+package snapple.cluster.io
 
-import snapple.kv.io.thrift.{ReplicaService, SnappleService}
+import snapple.thrift.io.{ReplicaService, SnappleService}
 
 import grizzled.slf4j.Logger
 

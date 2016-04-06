@@ -1,7 +1,7 @@
-package snapple.kv
+package snapple.cluster
 
-import snapple.kv.utils.Configuration
-import snapple.kv.io.{ReplicaServer, ReplicaClient}
+import snapple.cluster.utils.Configuration
+import snapple.cluster.io.{ReplicaServer, ReplicaClient}
 
 object Main {
 

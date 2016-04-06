@@ -1,6 +1,6 @@
-package snapple.kv.io
+package snapple.cluster.io
 
-import snapple.kv.io.thrift.{TDataType, ClientService, TOptionalString, TOptionalElementType, TOptionalDataType}
+import snapple.thrift.io.{TDataType, ClientService, TOptionalString, TOptionalElementType, TOptionalDataType}
 
 import grizzled.slf4j.Logger
 

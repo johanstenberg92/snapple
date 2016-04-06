@@ -1,6 +1,6 @@
-package snapple.kv
+package snapple.cluster
 
-import snapple.kv.datatypes.DataType
+import snapple.crdts.datatypes.DataType
 
 import java.util.concurrent.atomic.AtomicReference
 

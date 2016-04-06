@@ -1,4 +1,4 @@
-package snapple.kv.utils
+package snapple.cluster.utils
 
 import grizzled.slf4j.Logger
 
