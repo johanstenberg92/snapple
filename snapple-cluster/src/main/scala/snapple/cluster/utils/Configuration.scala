@@ -36,5 +36,5 @@ object Configuration {
       Nil
   }
 
-  lazy val UniqueId = sys.env.get("SNAPPLE_UNIQUE_ID").getOrElse(UUID.randomUUID)
+  lazy val UniqueId = sys.env.get("SNAPPLE_UNIQUE_ID").getOrElse(UUID.randomUUID.toString)
 }

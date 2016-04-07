@@ -15,7 +15,7 @@ object VersionVector {
 
 }
 
-case class VersionVector(private val versions: Map[String, Long] = Map.empty) extends DataType {
+case class VersionVector(private[snapple] val versions: Map[String, Long] = Map.empty) extends DataType {
 
   import VersionVector._
 
@@ -32,6 +32,8 @@ case class VersionVector(private val versions: Map[String, Long] = Map.empty) ex
 
   def contains(host: String): Boolean = versions.contains(host)
 
+  def size: Int = versions.size
+
   override def merge(that: VersionVector): VersionVector = {
     var merged = that.versions
 
@@ -45,21 +47,33 @@ case class VersionVector(private val versions: Map[String, Long] = Map.empty) ex
 
   def <(other: VersionVector): Boolean = compareBefore(other)
 
-  def >(other: VersionVector): Boolean = other.compareBefore(this)
+  def >(other: VersionVector): Boolean = compareAfter(other)
 
-  private def compareBefore(other: VersionVector): Boolean = {
-    var foundSmaller = false
-    var count = 0
+  def <>(other: VersionVector): Boolean =
+    !compareBefore(other) && !compareAfter(other) && this != other
 
-    versions.foreach {
-      case (key, version) =>
-        val otherVersion = other.versionAt(key)
+  private def compareBefore(other: VersionVector): Boolean = compareTo(other, (a: Long, b: Long) => a < b)
 
-        if (version <= otherVersion) count += 1
-        if (version < otherVersion) foundSmaller = true
+  private def compareAfter(other: VersionVector): Boolean = compareTo(other, (a: Long, b: Long) => a > b)
+
+  private def compareTo(other: VersionVector, cmp: (Long, Long) => Boolean): Boolean = {
+    if (cmp(other.size, size)) false
+    else {
+      val allKeys = versions.keySet ++ other.versions.keySet
+      var foundSpecial = false
+      var count = 0
+
+      allKeys.foreach {
+        case key =>
+          val version = versionAt(key)
+          val otherVersion = other.versionAt(key)
+
+          if (cmp(version, otherVersion) || version == otherVersion) count += 1
+          if (cmp(version, otherVersion)) foundSpecial = true
+      }
+
+      count == allKeys.size && foundSpecial
     }
-
-    count == versions.size || foundSmaller
   }
 
 }

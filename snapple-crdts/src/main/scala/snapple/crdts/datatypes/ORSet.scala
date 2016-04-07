@@ -2,7 +2,7 @@ package snapple.crdts.datatypes
 
 object ORSet {
 
-  private def subtractVersions(target: VersionVector, subtraction: VersionVector): VersionVector = {
+  private[snapple] def subtractVersions(target: VersionVector, subtraction: VersionVector): VersionVector = {
     val VersionVector(targetMap) = target
     val VersionVector(subtractionMap) = subtraction
 
@@ -13,7 +13,7 @@ object ORSet {
     VersionVector(resultMap)
   }
 
-  private def mergeCommonKeys[T](keys: Iterator[T], left: ORSet[T], right: ORSet[T]): Map[T, VersionVector] =
+  private[snapple] def mergeCommonKeys[T](keys: Iterator[T], left: ORSet[T], right: ORSet[T]): Map[T, VersionVector] =
     keys.foldLeft(Map.empty[T, VersionVector]) {
       case (acc, key) =>
         val VersionVector(leftVersions) = left.elementsMap(key)
@@ -37,7 +37,7 @@ object ORSet {
         else acc.updated(key, merged)
     }
 
-  private def mergeDisjointKeys[T](keys: Iterator[T], map: Map[T, VersionVector], other: VersionVector, accumulator: Map[T, VersionVector]): Map[T, VersionVector] = {
+  private[snapple] def mergeDisjointKeys[T](keys: Iterator[T], map: Map[T, VersionVector], other: VersionVector, accumulator: Map[T, VersionVector]): Map[T, VersionVector] = {
     keys.foldLeft(accumulator) {
       case (acc, key) =>
         val versionVector = map(key)
@@ -52,8 +52,8 @@ object ORSet {
 }
 
 case class ORSet[T](
-  private val elementsMap: Map[T, VersionVector],
-  private val versionVector: VersionVector
+  private val elementsMap: Map[T, VersionVector] = Map.empty[Any, VersionVector],
+  private val versionVector: VersionVector = VersionVector()
 ) extends DataType {
 
   override type S = ORSet[T]
