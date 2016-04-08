@@ -52,8 +52,8 @@ object ORSet {
 }
 
 case class ORSet[T](
-  private val elementsMap: Map[T, VersionVector] = Map.empty[Any, VersionVector],
-  private val versionVector: VersionVector = VersionVector()
+  private[snapple] val elementsMap: Map[T, VersionVector] = Map.empty[Any, VersionVector],
+  private[snapple] val versionVector: VersionVector = VersionVector()
 ) extends DataType {
 
   override type S = ORSet[T]
@@ -68,8 +68,8 @@ case class ORSet[T](
 
   def +(host: String, element: T): ORSet[T] = {
     val newVersionVector = versionVector + host
-    val newDot = VersionVector(host, newVersionVector.versionAt(host))
-    ORSet(elementsMap.updated(element, newDot), newVersionVector)
+    val newElementVersionVector = VersionVector(host, newVersionVector.versionAt(host))
+    ORSet(elementsMap.updated(element, newElementVersionVector), newVersionVector)
   }
 
   def -(host: String, element: T): ORSet[T] =
@@ -96,9 +96,3 @@ case class ORSet[T](
     }
 
 }
-
-sealed trait ORSetOp
-
-case object ORSetAdd extends ORSetOp
-
-case object ORSetRemove extends ORSetOp

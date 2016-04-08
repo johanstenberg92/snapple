@@ -323,5 +323,14 @@ class ORSetSpec extends WordSpecLike with Matchers {
       b3.merge(c).merge(a3).elements should be (Set.empty)
       b3.merge(a3).merge(c).elements should be (Set.empty)
     }
+
+    "be able to subtract versions" in {
+      val v1 = VersionVector(Map("a" -> 3, "b" -> 2, "d" -> 14, "g" -> 22))
+      val v2 = VersionVector(Map("a" -> 4, "b" -> 1, "c" -> 1, "d" -> 14, "e" -> 5, "f" -> 2))
+
+      val v3 = ORSet.subtractVersions(v1, v2)
+
+      v3.versions should be (Map("b" -> 2, "g" -> 22))
+    }
   }
 }

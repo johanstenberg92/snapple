@@ -8,9 +8,16 @@ case class KeyValueStore() {
 
   private val store: AtomicReference[Map[String, DataType]] = new AtomicReference()
 
+  def merge(other: Map[String, DataType]): Unit = {
+    ???
+  }
+
   def createEntry(key: String, dataType: DataType): Boolean = ???
 
   def removeEntry(key: String): Boolean = ???
 
-  def getEntry(key: String): Option[DataType] = ???
+  def entry(key: String): Option[DataType] = ???
+
+  def entries: Map[String, DataType] = store.get
+
 }
