@@ -1,5 +1,6 @@
-[![Stories in Ready](https://badge.waffle.io/johanstenberg92/snapple.png?label=ready&title=Ready)](https://waffle.io/johanstenberg92/snapple)
 # Snapple
+
+[![Stories in Ready](https://badge.waffle.io/johanstenberg92/snapple.png?label=ready&title=Waffle%20-%20Ready)](https://waffle.io/johanstenberg92/snapple)
 
 ### Introduction
 
