@@ -66,7 +66,7 @@ class ORSetSpec extends WordSpecLike with Matchers {
     "be able to add removed" in {
       val c1 = ORSet()
       val c2 = c1 - (node1, user1)
-      val c3 = c2 - (node1, user1)
+      val c3 = c2 + (node1, user1)
       c3.elements should contain (user1)
       val c4 = c3 - (node1, user1)
       c4.elements should not contain (user1)
@@ -225,7 +225,7 @@ class ORSetSpec extends WordSpecLike with Matchers {
       val dot = VersionVector(Map(nodeA -> 3L, nodeB -> 2L, nodeD -> 14L, nodeG -> 22L))
       val vvector = VersionVector(Map(nodeA -> 4L, nodeB -> 1L, nodeC -> 1L, nodeD -> 14L, nodeE -> 5L, nodeF -> 2L))
       val expected = VersionVector(Map(nodeB -> 2L, nodeG -> 22L))
-      ORSet.subtractVersions(dot, vvector) should be (expected)
+      ORSet.subtractDots(dot, vvector) should be (expected)
     }
 
     "verify mergeCommonKeys" in {
@@ -273,13 +273,13 @@ class ORSetSpec extends WordSpecLike with Matchers {
 
     "verify removed after merge" in {
       // Add Z at node1 replica
-      val a = ORSet() - (node1, "Z")
+      val a = ORSet() + (node1, "Z")
       // Replicate it to some node3, i.e. it has dot 'Z'->{node1 -> 1}
       val c = a
       // Remove Z at node1 replica
       val a2 = a - (node1, "Z")
       // Add Z at node2, a new replica
-      val b = ORSet() - (node2, "Z")
+      val b = ORSet() + (node2, "Z")
       // Replicate b to node1, so now node1 has a Z, the one with a Dot of
       // {node2 -> 1} and version vector of [{node1 -> 1}, {node2 -> 1}]
       val a3 = b.merge(a2)
@@ -302,8 +302,8 @@ class ORSetSpec extends WordSpecLike with Matchers {
     }
 
     "verify removed after merge 2" in {
-      val a = ORSet() - (node1, "Z")
-      val b = ORSet() - (node2, "Z")
+      val a = ORSet() + (node1, "Z")
+      val b = ORSet() + (node2, "Z")
       // replicate node3
       val c = a
       val a2 = a - (node1, "Z")
@@ -322,15 +322,6 @@ class ORSetSpec extends WordSpecLike with Matchers {
       c.merge(a3).merge(b3).elements should be (Set.empty)
       b3.merge(c).merge(a3).elements should be (Set.empty)
       b3.merge(a3).merge(c).elements should be (Set.empty)
-    }
-
-    "be able to subtract versions" in {
-      val v1 = VersionVector(Map("a" -> 3, "b" -> 2, "d" -> 14, "g" -> 22))
-      val v2 = VersionVector(Map("a" -> 4, "b" -> 1, "c" -> 1, "d" -> 14, "e" -> 5, "f" -> 2))
-
-      val v3 = ORSet.subtractVersions(v1, v2)
-
-      v3.versions should be (Map("b" -> 2, "g" -> 22))
     }
   }
 }
