@@ -9,7 +9,7 @@ object ORSet {
     val VersionVector(subtractionMap) = subtraction
 
     val resultMap = targetMap.filterNot {
-      case (k, v) => subtractionMap.get(k).exists(_ >= v)
+      case (k, v) ⇒ subtractionMap.get(k).exists(_ >= v)
     }
 
     VersionVector(resultMap)
@@ -17,12 +17,12 @@ object ORSet {
 
   private[snapple] def mergeCommonKeys[T](keys: Iterator[T], left: ORSet[T], right: ORSet[T]): Map[T, Dot] =
     keys.foldLeft(Map.empty[T, Dot]) {
-      case (acc, key) =>
+      case (acc, key) ⇒
         val VersionVector(leftVersions) = left.elementsMap(key)
         val VersionVector(rightVersions) = right.elementsMap(key)
 
         val commonVersions = leftVersions.filter {
-          case (node, t) => rightVersions.get(node).exists(_ == t)
+          case (node, t) ⇒ rightVersions.get(node).exists(_ == t)
         }
 
         val commonNodes = commonVersions.keys
@@ -41,7 +41,7 @@ object ORSet {
 
   private[snapple] def mergeDisjointKeys[T](keys: Iterator[T], map: Map[T, Dot], versionVector: VersionVector, accumulator: Map[T, Dot]): Map[T, Dot] = {
     keys.foldLeft(accumulator) {
-      case (acc, key) =>
+      case (acc, key) ⇒
         val dots = map(key)
 
         if (versionVector > dots || versionVector == dots) acc
@@ -53,9 +53,9 @@ object ORSet {
   }
 }
 
-case class ORSet[T](
-  private[snapple] val elementsMap: Map[T, ORSet.Dot] = Map.empty[Any, ORSet.Dot],
-  private[snapple] val versionVector: VersionVector = VersionVector()
+final case class ORSet[T](
+  private[snapple] val elementsMap:   Map[T, ORSet.Dot] = Map.empty[Any, ORSet.Dot],
+  private[snapple] val versionVector: VersionVector     = VersionVector()
 ) extends DataType {
 
   override type S = ORSet[T]
