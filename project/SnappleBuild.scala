@@ -35,7 +35,8 @@ object SnappleBuild extends Build {
   lazy val thriftSettings = Seq(
     libraryDependencies ++= Seq(
       Dependencies.grizzledLogging,
-      Dependencies.thrift
+      Dependencies.thrift,
+      Dependencies.scalaTest
     )
   )
 

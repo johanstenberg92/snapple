@@ -39,8 +39,9 @@ public class TORSet implements org.apache.thrift.TBase<TORSet, TORSet._Fields>, 
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("TORSet");
 
   private static final org.apache.thrift.protocol.TField ELEMENT_TYPE_FIELD_DESC = new org.apache.thrift.protocol.TField("elementType", org.apache.thrift.protocol.TType.I32, (short)1);
-  private static final org.apache.thrift.protocol.TField ELEMENTS_MAP_FIELD_DESC = new org.apache.thrift.protocol.TField("elementsMap", org.apache.thrift.protocol.TType.MAP, (short)2);
-  private static final org.apache.thrift.protocol.TField VERSION_VECTOR_FIELD_DESC = new org.apache.thrift.protocol.TField("versionVector", org.apache.thrift.protocol.TType.STRUCT, (short)3);
+  private static final org.apache.thrift.protocol.TField ELEMENT_KEYS_FIELD_DESC = new org.apache.thrift.protocol.TField("elementKeys", org.apache.thrift.protocol.TType.LIST, (short)2);
+  private static final org.apache.thrift.protocol.TField ELEMENT_VALUES_FIELD_DESC = new org.apache.thrift.protocol.TField("elementValues", org.apache.thrift.protocol.TType.LIST, (short)3);
+  private static final org.apache.thrift.protocol.TField VERSION_VECTOR_FIELD_DESC = new org.apache.thrift.protocol.TField("versionVector", org.apache.thrift.protocol.TType.STRUCT, (short)4);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -49,14 +50,16 @@ public class TORSet implements org.apache.thrift.TBase<TORSet, TORSet._Fields>, 
   }
 
   public int elementType; // required
-  public Map<ByteBuffer,TVersionVector> elementsMap; // required
+  public List<ByteBuffer> elementKeys; // required
+  public List<TVersionVector> elementValues; // required
   public TVersionVector versionVector; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
     ELEMENT_TYPE((short)1, "elementType"),
-    ELEMENTS_MAP((short)2, "elementsMap"),
-    VERSION_VECTOR((short)3, "versionVector");
+    ELEMENT_KEYS((short)2, "elementKeys"),
+    ELEMENT_VALUES((short)3, "elementValues"),
+    VERSION_VECTOR((short)4, "versionVector");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -73,9 +76,11 @@ public class TORSet implements org.apache.thrift.TBase<TORSet, TORSet._Fields>, 
       switch(fieldId) {
         case 1: // ELEMENT_TYPE
           return ELEMENT_TYPE;
-        case 2: // ELEMENTS_MAP
-          return ELEMENTS_MAP;
-        case 3: // VERSION_VECTOR
+        case 2: // ELEMENT_KEYS
+          return ELEMENT_KEYS;
+        case 3: // ELEMENT_VALUES
+          return ELEMENT_VALUES;
+        case 4: // VERSION_VECTOR
           return VERSION_VECTOR;
         default:
           return null;
@@ -124,9 +129,11 @@ public class TORSet implements org.apache.thrift.TBase<TORSet, TORSet._Fields>, 
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
     tmpMap.put(_Fields.ELEMENT_TYPE, new org.apache.thrift.meta_data.FieldMetaData("elementType", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
-    tmpMap.put(_Fields.ELEMENTS_MAP, new org.apache.thrift.meta_data.FieldMetaData("elementsMap", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-        new org.apache.thrift.meta_data.MapMetaData(org.apache.thrift.protocol.TType.MAP, 
-            new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING            , true), 
+    tmpMap.put(_Fields.ELEMENT_KEYS, new org.apache.thrift.meta_data.FieldMetaData("elementKeys", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+        new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
+            new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING            , true))));
+    tmpMap.put(_Fields.ELEMENT_VALUES, new org.apache.thrift.meta_data.FieldMetaData("elementValues", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+        new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
             new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT            , "TVersionVector"))));
     tmpMap.put(_Fields.VERSION_VECTOR, new org.apache.thrift.meta_data.FieldMetaData("versionVector", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT        , "TVersionVector")));
@@ -139,13 +146,15 @@ public class TORSet implements org.apache.thrift.TBase<TORSet, TORSet._Fields>, 
 
   public TORSet(
     int elementType,
-    Map<ByteBuffer,TVersionVector> elementsMap,
+    List<ByteBuffer> elementKeys,
+    List<TVersionVector> elementValues,
     TVersionVector versionVector)
   {
     this();
     this.elementType = elementType;
     setElementTypeIsSet(true);
-    this.elementsMap = elementsMap;
+    this.elementKeys = elementKeys;
+    this.elementValues = elementValues;
     this.versionVector = versionVector;
   }
 
@@ -155,20 +164,16 @@ public class TORSet implements org.apache.thrift.TBase<TORSet, TORSet._Fields>, 
   public TORSet(TORSet other) {
     __isset_bitfield = other.__isset_bitfield;
     this.elementType = other.elementType;
-    if (other.isSetElementsMap()) {
-      Map<ByteBuffer,TVersionVector> __this__elementsMap = new HashMap<ByteBuffer,TVersionVector>(other.elementsMap.size());
-      for (Map.Entry<ByteBuffer, TVersionVector> other_element : other.elementsMap.entrySet()) {
-
-        ByteBuffer other_element_key = other_element.getKey();
-        TVersionVector other_element_value = other_element.getValue();
-
-        ByteBuffer __this__elementsMap_copy_key = org.apache.thrift.TBaseHelper.copyBinary(other_element_key);
-
-        TVersionVector __this__elementsMap_copy_value = other_element_value;
-
-        __this__elementsMap.put(__this__elementsMap_copy_key, __this__elementsMap_copy_value);
+    if (other.isSetElementKeys()) {
+      List<ByteBuffer> __this__elementKeys = new ArrayList<ByteBuffer>(other.elementKeys);
+      this.elementKeys = __this__elementKeys;
+    }
+    if (other.isSetElementValues()) {
+      List<TVersionVector> __this__elementValues = new ArrayList<TVersionVector>(other.elementValues.size());
+      for (TVersionVector other_element : other.elementValues) {
+        __this__elementValues.add(other_element);
       }
-      this.elementsMap = __this__elementsMap;
+      this.elementValues = __this__elementValues;
     }
     if (other.isSetVersionVector()) {
       this.versionVector = other.versionVector;
@@ -183,7 +188,8 @@ public class TORSet implements org.apache.thrift.TBase<TORSet, TORSet._Fields>, 
   public void clear() {
     setElementTypeIsSet(false);
     this.elementType = 0;
-    this.elementsMap = null;
+    this.elementKeys = null;
+    this.elementValues = null;
     this.versionVector = null;
   }
 
@@ -210,38 +216,81 @@ public class TORSet implements org.apache.thrift.TBase<TORSet, TORSet._Fields>, 
     __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __ELEMENTTYPE_ISSET_ID, value);
   }
 
-  public int getElementsMapSize() {
-    return (this.elementsMap == null) ? 0 : this.elementsMap.size();
+  public int getElementKeysSize() {
+    return (this.elementKeys == null) ? 0 : this.elementKeys.size();
   }
 
-  public void putToElementsMap(ByteBuffer key, TVersionVector val) {
-    if (this.elementsMap == null) {
-      this.elementsMap = new HashMap<ByteBuffer,TVersionVector>();
+  public java.util.Iterator<ByteBuffer> getElementKeysIterator() {
+    return (this.elementKeys == null) ? null : this.elementKeys.iterator();
+  }
+
+  public void addToElementKeys(ByteBuffer elem) {
+    if (this.elementKeys == null) {
+      this.elementKeys = new ArrayList<ByteBuffer>();
     }
-    this.elementsMap.put(key, val);
+    this.elementKeys.add(elem);
   }
 
-  public Map<ByteBuffer,TVersionVector> getElementsMap() {
-    return this.elementsMap;
+  public List<ByteBuffer> getElementKeys() {
+    return this.elementKeys;
   }
 
-  public TORSet setElementsMap(Map<ByteBuffer,TVersionVector> elementsMap) {
-    this.elementsMap = elementsMap;
+  public TORSet setElementKeys(List<ByteBuffer> elementKeys) {
+    this.elementKeys = elementKeys;
     return this;
   }
 
-  public void unsetElementsMap() {
-    this.elementsMap = null;
+  public void unsetElementKeys() {
+    this.elementKeys = null;
   }
 
-  /** Returns true if field elementsMap is set (has been assigned a value) and false otherwise */
-  public boolean isSetElementsMap() {
-    return this.elementsMap != null;
+  /** Returns true if field elementKeys is set (has been assigned a value) and false otherwise */
+  public boolean isSetElementKeys() {
+    return this.elementKeys != null;
   }
 
-  public void setElementsMapIsSet(boolean value) {
+  public void setElementKeysIsSet(boolean value) {
     if (!value) {
-      this.elementsMap = null;
+      this.elementKeys = null;
+    }
+  }
+
+  public int getElementValuesSize() {
+    return (this.elementValues == null) ? 0 : this.elementValues.size();
+  }
+
+  public java.util.Iterator<TVersionVector> getElementValuesIterator() {
+    return (this.elementValues == null) ? null : this.elementValues.iterator();
+  }
+
+  public void addToElementValues(TVersionVector elem) {
+    if (this.elementValues == null) {
+      this.elementValues = new ArrayList<TVersionVector>();
+    }
+    this.elementValues.add(elem);
+  }
+
+  public List<TVersionVector> getElementValues() {
+    return this.elementValues;
+  }
+
+  public TORSet setElementValues(List<TVersionVector> elementValues) {
+    this.elementValues = elementValues;
+    return this;
+  }
+
+  public void unsetElementValues() {
+    this.elementValues = null;
+  }
+
+  /** Returns true if field elementValues is set (has been assigned a value) and false otherwise */
+  public boolean isSetElementValues() {
+    return this.elementValues != null;
+  }
+
+  public void setElementValuesIsSet(boolean value) {
+    if (!value) {
+      this.elementValues = null;
     }
   }
 
@@ -279,11 +328,19 @@ public class TORSet implements org.apache.thrift.TBase<TORSet, TORSet._Fields>, 
       }
       break;
 
-    case ELEMENTS_MAP:
+    case ELEMENT_KEYS:
       if (value == null) {
-        unsetElementsMap();
+        unsetElementKeys();
       } else {
-        setElementsMap((Map<ByteBuffer,TVersionVector>)value);
+        setElementKeys((List<ByteBuffer>)value);
+      }
+      break;
+
+    case ELEMENT_VALUES:
+      if (value == null) {
+        unsetElementValues();
+      } else {
+        setElementValues((List<TVersionVector>)value);
       }
       break;
 
@@ -303,8 +360,11 @@ public class TORSet implements org.apache.thrift.TBase<TORSet, TORSet._Fields>, 
     case ELEMENT_TYPE:
       return getElementType();
 
-    case ELEMENTS_MAP:
-      return getElementsMap();
+    case ELEMENT_KEYS:
+      return getElementKeys();
+
+    case ELEMENT_VALUES:
+      return getElementValues();
 
     case VERSION_VECTOR:
       return getVersionVector();
@@ -322,8 +382,10 @@ public class TORSet implements org.apache.thrift.TBase<TORSet, TORSet._Fields>, 
     switch (field) {
     case ELEMENT_TYPE:
       return isSetElementType();
-    case ELEMENTS_MAP:
-      return isSetElementsMap();
+    case ELEMENT_KEYS:
+      return isSetElementKeys();
+    case ELEMENT_VALUES:
+      return isSetElementValues();
     case VERSION_VECTOR:
       return isSetVersionVector();
     }
@@ -352,12 +414,21 @@ public class TORSet implements org.apache.thrift.TBase<TORSet, TORSet._Fields>, 
         return false;
     }
 
-    boolean this_present_elementsMap = true && this.isSetElementsMap();
-    boolean that_present_elementsMap = true && that.isSetElementsMap();
-    if (this_present_elementsMap || that_present_elementsMap) {
-      if (!(this_present_elementsMap && that_present_elementsMap))
+    boolean this_present_elementKeys = true && this.isSetElementKeys();
+    boolean that_present_elementKeys = true && that.isSetElementKeys();
+    if (this_present_elementKeys || that_present_elementKeys) {
+      if (!(this_present_elementKeys && that_present_elementKeys))
         return false;
-      if (!this.elementsMap.equals(that.elementsMap))
+      if (!this.elementKeys.equals(that.elementKeys))
+        return false;
+    }
+
+    boolean this_present_elementValues = true && this.isSetElementValues();
+    boolean that_present_elementValues = true && that.isSetElementValues();
+    if (this_present_elementValues || that_present_elementValues) {
+      if (!(this_present_elementValues && that_present_elementValues))
+        return false;
+      if (!this.elementValues.equals(that.elementValues))
         return false;
     }
 
@@ -382,10 +453,15 @@ public class TORSet implements org.apache.thrift.TBase<TORSet, TORSet._Fields>, 
     if (present_elementType)
       list.add(elementType);
 
-    boolean present_elementsMap = true && (isSetElementsMap());
-    list.add(present_elementsMap);
-    if (present_elementsMap)
-      list.add(elementsMap);
+    boolean present_elementKeys = true && (isSetElementKeys());
+    list.add(present_elementKeys);
+    if (present_elementKeys)
+      list.add(elementKeys);
+
+    boolean present_elementValues = true && (isSetElementValues());
+    list.add(present_elementValues);
+    if (present_elementValues)
+      list.add(elementValues);
 
     boolean present_versionVector = true && (isSetVersionVector());
     list.add(present_versionVector);
@@ -413,12 +489,22 @@ public class TORSet implements org.apache.thrift.TBase<TORSet, TORSet._Fields>, 
         return lastComparison;
       }
     }
-    lastComparison = Boolean.valueOf(isSetElementsMap()).compareTo(other.isSetElementsMap());
+    lastComparison = Boolean.valueOf(isSetElementKeys()).compareTo(other.isSetElementKeys());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetElementsMap()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.elementsMap, other.elementsMap);
+    if (isSetElementKeys()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.elementKeys, other.elementKeys);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetElementValues()).compareTo(other.isSetElementValues());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetElementValues()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.elementValues, other.elementValues);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -457,11 +543,19 @@ public class TORSet implements org.apache.thrift.TBase<TORSet, TORSet._Fields>, 
     sb.append(this.elementType);
     first = false;
     if (!first) sb.append(", ");
-    sb.append("elementsMap:");
-    if (this.elementsMap == null) {
+    sb.append("elementKeys:");
+    if (this.elementKeys == null) {
       sb.append("null");
     } else {
-      sb.append(this.elementsMap);
+      org.apache.thrift.TBaseHelper.toString(this.elementKeys, sb);
+    }
+    first = false;
+    if (!first) sb.append(", ");
+    sb.append("elementValues:");
+    if (this.elementValues == null) {
+      sb.append("null");
+    } else {
+      sb.append(this.elementValues);
     }
     first = false;
     if (!first) sb.append(", ");
@@ -525,28 +619,44 @@ public class TORSet implements org.apache.thrift.TBase<TORSet, TORSet._Fields>, 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 2: // ELEMENTS_MAP
-            if (schemeField.type == org.apache.thrift.protocol.TType.MAP) {
+          case 2: // ELEMENT_KEYS
+            if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TMap _map0 = iprot.readMapBegin();
-                struct.elementsMap = new HashMap<ByteBuffer,TVersionVector>(2*_map0.size);
-                ByteBuffer _key1;
-                TVersionVector _val2;
-                for (int _i3 = 0; _i3 < _map0.size; ++_i3)
+                org.apache.thrift.protocol.TList _list0 = iprot.readListBegin();
+                struct.elementKeys = new ArrayList<ByteBuffer>(_list0.size);
+                ByteBuffer _elem1;
+                for (int _i2 = 0; _i2 < _list0.size; ++_i2)
                 {
-                  _key1 = iprot.readBinary();
-                  _val2 = new TVersionVector();
-                  _val2.read(iprot);
-                  struct.elementsMap.put(_key1, _val2);
+                  _elem1 = iprot.readBinary();
+                  struct.elementKeys.add(_elem1);
                 }
-                iprot.readMapEnd();
+                iprot.readListEnd();
               }
-              struct.setElementsMapIsSet(true);
+              struct.setElementKeysIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 3: // VERSION_VECTOR
+          case 3: // ELEMENT_VALUES
+            if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
+              {
+                org.apache.thrift.protocol.TList _list3 = iprot.readListBegin();
+                struct.elementValues = new ArrayList<TVersionVector>(_list3.size);
+                TVersionVector _elem4;
+                for (int _i5 = 0; _i5 < _list3.size; ++_i5)
+                {
+                  _elem4 = new TVersionVector();
+                  _elem4.read(iprot);
+                  struct.elementValues.add(_elem4);
+                }
+                iprot.readListEnd();
+              }
+              struct.setElementValuesIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 4: // VERSION_VECTOR
             if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
               struct.versionVector = new TVersionVector();
               struct.versionVector.read(iprot);
@@ -573,16 +683,27 @@ public class TORSet implements org.apache.thrift.TBase<TORSet, TORSet._Fields>, 
       oprot.writeFieldBegin(ELEMENT_TYPE_FIELD_DESC);
       oprot.writeI32(struct.elementType);
       oprot.writeFieldEnd();
-      if (struct.elementsMap != null) {
-        oprot.writeFieldBegin(ELEMENTS_MAP_FIELD_DESC);
+      if (struct.elementKeys != null) {
+        oprot.writeFieldBegin(ELEMENT_KEYS_FIELD_DESC);
         {
-          oprot.writeMapBegin(new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.STRUCT, struct.elementsMap.size()));
-          for (Map.Entry<ByteBuffer, TVersionVector> _iter4 : struct.elementsMap.entrySet())
+          oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, struct.elementKeys.size()));
+          for (ByteBuffer _iter6 : struct.elementKeys)
           {
-            oprot.writeBinary(_iter4.getKey());
-            _iter4.getValue().write(oprot);
+            oprot.writeBinary(_iter6);
           }
-          oprot.writeMapEnd();
+          oprot.writeListEnd();
+        }
+        oprot.writeFieldEnd();
+      }
+      if (struct.elementValues != null) {
+        oprot.writeFieldBegin(ELEMENT_VALUES_FIELD_DESC);
+        {
+          oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.elementValues.size()));
+          for (TVersionVector _iter7 : struct.elementValues)
+          {
+            _iter7.write(oprot);
+          }
+          oprot.writeListEnd();
         }
         oprot.writeFieldEnd();
       }
@@ -612,23 +733,34 @@ public class TORSet implements org.apache.thrift.TBase<TORSet, TORSet._Fields>, 
       if (struct.isSetElementType()) {
         optionals.set(0);
       }
-      if (struct.isSetElementsMap()) {
+      if (struct.isSetElementKeys()) {
         optionals.set(1);
       }
-      if (struct.isSetVersionVector()) {
+      if (struct.isSetElementValues()) {
         optionals.set(2);
       }
-      oprot.writeBitSet(optionals, 3);
+      if (struct.isSetVersionVector()) {
+        optionals.set(3);
+      }
+      oprot.writeBitSet(optionals, 4);
       if (struct.isSetElementType()) {
         oprot.writeI32(struct.elementType);
       }
-      if (struct.isSetElementsMap()) {
+      if (struct.isSetElementKeys()) {
         {
-          oprot.writeI32(struct.elementsMap.size());
-          for (Map.Entry<ByteBuffer, TVersionVector> _iter5 : struct.elementsMap.entrySet())
+          oprot.writeI32(struct.elementKeys.size());
+          for (ByteBuffer _iter8 : struct.elementKeys)
           {
-            oprot.writeBinary(_iter5.getKey());
-            _iter5.getValue().write(oprot);
+            oprot.writeBinary(_iter8);
+          }
+        }
+      }
+      if (struct.isSetElementValues()) {
+        {
+          oprot.writeI32(struct.elementValues.size());
+          for (TVersionVector _iter9 : struct.elementValues)
+          {
+            _iter9.write(oprot);
           }
         }
       }
@@ -640,28 +772,39 @@ public class TORSet implements org.apache.thrift.TBase<TORSet, TORSet._Fields>, 
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, TORSet struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      BitSet incoming = iprot.readBitSet(3);
+      BitSet incoming = iprot.readBitSet(4);
       if (incoming.get(0)) {
         struct.elementType = iprot.readI32();
         struct.setElementTypeIsSet(true);
       }
       if (incoming.get(1)) {
         {
-          org.apache.thrift.protocol.TMap _map6 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-          struct.elementsMap = new HashMap<ByteBuffer,TVersionVector>(2*_map6.size);
-          ByteBuffer _key7;
-          TVersionVector _val8;
-          for (int _i9 = 0; _i9 < _map6.size; ++_i9)
+          org.apache.thrift.protocol.TList _list10 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
+          struct.elementKeys = new ArrayList<ByteBuffer>(_list10.size);
+          ByteBuffer _elem11;
+          for (int _i12 = 0; _i12 < _list10.size; ++_i12)
           {
-            _key7 = iprot.readBinary();
-            _val8 = new TVersionVector();
-            _val8.read(iprot);
-            struct.elementsMap.put(_key7, _val8);
+            _elem11 = iprot.readBinary();
+            struct.elementKeys.add(_elem11);
           }
         }
-        struct.setElementsMapIsSet(true);
+        struct.setElementKeysIsSet(true);
       }
       if (incoming.get(2)) {
+        {
+          org.apache.thrift.protocol.TList _list13 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+          struct.elementValues = new ArrayList<TVersionVector>(_list13.size);
+          TVersionVector _elem14;
+          for (int _i15 = 0; _i15 < _list13.size; ++_i15)
+          {
+            _elem14 = new TVersionVector();
+            _elem14.read(iprot);
+            struct.elementValues.add(_elem14);
+          }
+        }
+        struct.setElementValuesIsSet(true);
+      }
+      if (incoming.get(3)) {
         struct.versionVector = new TVersionVector();
         struct.versionVector.read(iprot);
         struct.setVersionVectorIsSet(true);

@@ -38,7 +38,8 @@ import org.slf4j.LoggerFactory;
 public class TVersionVector implements org.apache.thrift.TBase<TVersionVector, TVersionVector._Fields>, java.io.Serializable, Cloneable, Comparable<TVersionVector> {
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("TVersionVector");
 
-  private static final org.apache.thrift.protocol.TField VERSIONS_FIELD_DESC = new org.apache.thrift.protocol.TField("versions", org.apache.thrift.protocol.TType.MAP, (short)1);
+  private static final org.apache.thrift.protocol.TField VERSION_KEYS_FIELD_DESC = new org.apache.thrift.protocol.TField("versionKeys", org.apache.thrift.protocol.TType.LIST, (short)1);
+  private static final org.apache.thrift.protocol.TField VERSION_VALUES_FIELD_DESC = new org.apache.thrift.protocol.TField("versionValues", org.apache.thrift.protocol.TType.LIST, (short)2);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -46,11 +47,13 @@ public class TVersionVector implements org.apache.thrift.TBase<TVersionVector, T
     schemes.put(TupleScheme.class, new TVersionVectorTupleSchemeFactory());
   }
 
-  public Map<String,Long> versions; // required
+  public List<String> versionKeys; // required
+  public List<Long> versionValues; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-    VERSIONS((short)1, "versions");
+    VERSION_KEYS((short)1, "versionKeys"),
+    VERSION_VALUES((short)2, "versionValues");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -65,8 +68,10 @@ public class TVersionVector implements org.apache.thrift.TBase<TVersionVector, T
      */
     public static _Fields findByThriftId(int fieldId) {
       switch(fieldId) {
-        case 1: // VERSIONS
-          return VERSIONS;
+        case 1: // VERSION_KEYS
+          return VERSION_KEYS;
+        case 2: // VERSION_VALUES
+          return VERSION_VALUES;
         default:
           return null;
       }
@@ -110,9 +115,11 @@ public class TVersionVector implements org.apache.thrift.TBase<TVersionVector, T
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
-    tmpMap.put(_Fields.VERSIONS, new org.apache.thrift.meta_data.FieldMetaData("versions", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-        new org.apache.thrift.meta_data.MapMetaData(org.apache.thrift.protocol.TType.MAP, 
-            new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING), 
+    tmpMap.put(_Fields.VERSION_KEYS, new org.apache.thrift.meta_data.FieldMetaData("versionKeys", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+        new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
+            new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING))));
+    tmpMap.put(_Fields.VERSION_VALUES, new org.apache.thrift.meta_data.FieldMetaData("versionValues", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+        new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
             new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64))));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(TVersionVector.class, metaDataMap);
@@ -122,19 +129,25 @@ public class TVersionVector implements org.apache.thrift.TBase<TVersionVector, T
   }
 
   public TVersionVector(
-    Map<String,Long> versions)
+    List<String> versionKeys,
+    List<Long> versionValues)
   {
     this();
-    this.versions = versions;
+    this.versionKeys = versionKeys;
+    this.versionValues = versionValues;
   }
 
   /**
    * Performs a deep copy on <i>other</i>.
    */
   public TVersionVector(TVersionVector other) {
-    if (other.isSetVersions()) {
-      Map<String,Long> __this__versions = new HashMap<String,Long>(other.versions);
-      this.versions = __this__versions;
+    if (other.isSetVersionKeys()) {
+      List<String> __this__versionKeys = new ArrayList<String>(other.versionKeys);
+      this.versionKeys = __this__versionKeys;
+    }
+    if (other.isSetVersionValues()) {
+      List<Long> __this__versionValues = new ArrayList<Long>(other.versionValues);
+      this.versionValues = __this__versionValues;
     }
   }
 
@@ -144,51 +157,103 @@ public class TVersionVector implements org.apache.thrift.TBase<TVersionVector, T
 
   @Override
   public void clear() {
-    this.versions = null;
+    this.versionKeys = null;
+    this.versionValues = null;
   }
 
-  public int getVersionsSize() {
-    return (this.versions == null) ? 0 : this.versions.size();
+  public int getVersionKeysSize() {
+    return (this.versionKeys == null) ? 0 : this.versionKeys.size();
   }
 
-  public void putToVersions(String key, long val) {
-    if (this.versions == null) {
-      this.versions = new HashMap<String,Long>();
+  public java.util.Iterator<String> getVersionKeysIterator() {
+    return (this.versionKeys == null) ? null : this.versionKeys.iterator();
+  }
+
+  public void addToVersionKeys(String elem) {
+    if (this.versionKeys == null) {
+      this.versionKeys = new ArrayList<String>();
     }
-    this.versions.put(key, val);
+    this.versionKeys.add(elem);
   }
 
-  public Map<String,Long> getVersions() {
-    return this.versions;
+  public List<String> getVersionKeys() {
+    return this.versionKeys;
   }
 
-  public TVersionVector setVersions(Map<String,Long> versions) {
-    this.versions = versions;
+  public TVersionVector setVersionKeys(List<String> versionKeys) {
+    this.versionKeys = versionKeys;
     return this;
   }
 
-  public void unsetVersions() {
-    this.versions = null;
+  public void unsetVersionKeys() {
+    this.versionKeys = null;
   }
 
-  /** Returns true if field versions is set (has been assigned a value) and false otherwise */
-  public boolean isSetVersions() {
-    return this.versions != null;
+  /** Returns true if field versionKeys is set (has been assigned a value) and false otherwise */
+  public boolean isSetVersionKeys() {
+    return this.versionKeys != null;
   }
 
-  public void setVersionsIsSet(boolean value) {
+  public void setVersionKeysIsSet(boolean value) {
     if (!value) {
-      this.versions = null;
+      this.versionKeys = null;
+    }
+  }
+
+  public int getVersionValuesSize() {
+    return (this.versionValues == null) ? 0 : this.versionValues.size();
+  }
+
+  public java.util.Iterator<Long> getVersionValuesIterator() {
+    return (this.versionValues == null) ? null : this.versionValues.iterator();
+  }
+
+  public void addToVersionValues(long elem) {
+    if (this.versionValues == null) {
+      this.versionValues = new ArrayList<Long>();
+    }
+    this.versionValues.add(elem);
+  }
+
+  public List<Long> getVersionValues() {
+    return this.versionValues;
+  }
+
+  public TVersionVector setVersionValues(List<Long> versionValues) {
+    this.versionValues = versionValues;
+    return this;
+  }
+
+  public void unsetVersionValues() {
+    this.versionValues = null;
+  }
+
+  /** Returns true if field versionValues is set (has been assigned a value) and false otherwise */
+  public boolean isSetVersionValues() {
+    return this.versionValues != null;
+  }
+
+  public void setVersionValuesIsSet(boolean value) {
+    if (!value) {
+      this.versionValues = null;
     }
   }
 
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
-    case VERSIONS:
+    case VERSION_KEYS:
       if (value == null) {
-        unsetVersions();
+        unsetVersionKeys();
       } else {
-        setVersions((Map<String,Long>)value);
+        setVersionKeys((List<String>)value);
+      }
+      break;
+
+    case VERSION_VALUES:
+      if (value == null) {
+        unsetVersionValues();
+      } else {
+        setVersionValues((List<Long>)value);
       }
       break;
 
@@ -197,8 +262,11 @@ public class TVersionVector implements org.apache.thrift.TBase<TVersionVector, T
 
   public Object getFieldValue(_Fields field) {
     switch (field) {
-    case VERSIONS:
-      return getVersions();
+    case VERSION_KEYS:
+      return getVersionKeys();
+
+    case VERSION_VALUES:
+      return getVersionValues();
 
     }
     throw new IllegalStateException();
@@ -211,8 +279,10 @@ public class TVersionVector implements org.apache.thrift.TBase<TVersionVector, T
     }
 
     switch (field) {
-    case VERSIONS:
-      return isSetVersions();
+    case VERSION_KEYS:
+      return isSetVersionKeys();
+    case VERSION_VALUES:
+      return isSetVersionValues();
     }
     throw new IllegalStateException();
   }
@@ -230,12 +300,21 @@ public class TVersionVector implements org.apache.thrift.TBase<TVersionVector, T
     if (that == null)
       return false;
 
-    boolean this_present_versions = true && this.isSetVersions();
-    boolean that_present_versions = true && that.isSetVersions();
-    if (this_present_versions || that_present_versions) {
-      if (!(this_present_versions && that_present_versions))
+    boolean this_present_versionKeys = true && this.isSetVersionKeys();
+    boolean that_present_versionKeys = true && that.isSetVersionKeys();
+    if (this_present_versionKeys || that_present_versionKeys) {
+      if (!(this_present_versionKeys && that_present_versionKeys))
         return false;
-      if (!this.versions.equals(that.versions))
+      if (!this.versionKeys.equals(that.versionKeys))
+        return false;
+    }
+
+    boolean this_present_versionValues = true && this.isSetVersionValues();
+    boolean that_present_versionValues = true && that.isSetVersionValues();
+    if (this_present_versionValues || that_present_versionValues) {
+      if (!(this_present_versionValues && that_present_versionValues))
+        return false;
+      if (!this.versionValues.equals(that.versionValues))
         return false;
     }
 
@@ -246,10 +325,15 @@ public class TVersionVector implements org.apache.thrift.TBase<TVersionVector, T
   public int hashCode() {
     List<Object> list = new ArrayList<Object>();
 
-    boolean present_versions = true && (isSetVersions());
-    list.add(present_versions);
-    if (present_versions)
-      list.add(versions);
+    boolean present_versionKeys = true && (isSetVersionKeys());
+    list.add(present_versionKeys);
+    if (present_versionKeys)
+      list.add(versionKeys);
+
+    boolean present_versionValues = true && (isSetVersionValues());
+    list.add(present_versionValues);
+    if (present_versionValues)
+      list.add(versionValues);
 
     return list.hashCode();
   }
@@ -262,12 +346,22 @@ public class TVersionVector implements org.apache.thrift.TBase<TVersionVector, T
 
     int lastComparison = 0;
 
-    lastComparison = Boolean.valueOf(isSetVersions()).compareTo(other.isSetVersions());
+    lastComparison = Boolean.valueOf(isSetVersionKeys()).compareTo(other.isSetVersionKeys());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetVersions()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.versions, other.versions);
+    if (isSetVersionKeys()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.versionKeys, other.versionKeys);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetVersionValues()).compareTo(other.isSetVersionValues());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetVersionValues()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.versionValues, other.versionValues);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -292,11 +386,19 @@ public class TVersionVector implements org.apache.thrift.TBase<TVersionVector, T
     StringBuilder sb = new StringBuilder("TVersionVector(");
     boolean first = true;
 
-    sb.append("versions:");
-    if (this.versions == null) {
+    sb.append("versionKeys:");
+    if (this.versionKeys == null) {
       sb.append("null");
     } else {
-      sb.append(this.versions);
+      sb.append(this.versionKeys);
+    }
+    first = false;
+    if (!first) sb.append(", ");
+    sb.append("versionValues:");
+    if (this.versionValues == null) {
+      sb.append("null");
+    } else {
+      sb.append(this.versionValues);
     }
     first = false;
     sb.append(")");
@@ -342,22 +444,38 @@ public class TVersionVector implements org.apache.thrift.TBase<TVersionVector, T
           break;
         }
         switch (schemeField.id) {
-          case 1: // VERSIONS
-            if (schemeField.type == org.apache.thrift.protocol.TType.MAP) {
+          case 1: // VERSION_KEYS
+            if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TMap _map10 = iprot.readMapBegin();
-                struct.versions = new HashMap<String,Long>(2*_map10.size);
-                String _key11;
-                long _val12;
-                for (int _i13 = 0; _i13 < _map10.size; ++_i13)
+                org.apache.thrift.protocol.TList _list16 = iprot.readListBegin();
+                struct.versionKeys = new ArrayList<String>(_list16.size);
+                String _elem17;
+                for (int _i18 = 0; _i18 < _list16.size; ++_i18)
                 {
-                  _key11 = iprot.readString();
-                  _val12 = iprot.readI64();
-                  struct.versions.put(_key11, _val12);
+                  _elem17 = iprot.readString();
+                  struct.versionKeys.add(_elem17);
                 }
-                iprot.readMapEnd();
+                iprot.readListEnd();
               }
-              struct.setVersionsIsSet(true);
+              struct.setVersionKeysIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 2: // VERSION_VALUES
+            if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
+              {
+                org.apache.thrift.protocol.TList _list19 = iprot.readListBegin();
+                struct.versionValues = new ArrayList<Long>(_list19.size);
+                long _elem20;
+                for (int _i21 = 0; _i21 < _list19.size; ++_i21)
+                {
+                  _elem20 = iprot.readI64();
+                  struct.versionValues.add(_elem20);
+                }
+                iprot.readListEnd();
+              }
+              struct.setVersionValuesIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
@@ -377,16 +495,27 @@ public class TVersionVector implements org.apache.thrift.TBase<TVersionVector, T
       struct.validate();
 
       oprot.writeStructBegin(STRUCT_DESC);
-      if (struct.versions != null) {
-        oprot.writeFieldBegin(VERSIONS_FIELD_DESC);
+      if (struct.versionKeys != null) {
+        oprot.writeFieldBegin(VERSION_KEYS_FIELD_DESC);
         {
-          oprot.writeMapBegin(new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.I64, struct.versions.size()));
-          for (Map.Entry<String, Long> _iter14 : struct.versions.entrySet())
+          oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, struct.versionKeys.size()));
+          for (String _iter22 : struct.versionKeys)
           {
-            oprot.writeString(_iter14.getKey());
-            oprot.writeI64(_iter14.getValue());
+            oprot.writeString(_iter22);
           }
-          oprot.writeMapEnd();
+          oprot.writeListEnd();
+        }
+        oprot.writeFieldEnd();
+      }
+      if (struct.versionValues != null) {
+        oprot.writeFieldBegin(VERSION_VALUES_FIELD_DESC);
+        {
+          oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.I64, struct.versionValues.size()));
+          for (long _iter23 : struct.versionValues)
+          {
+            oprot.writeI64(_iter23);
+          }
+          oprot.writeListEnd();
         }
         oprot.writeFieldEnd();
       }
@@ -408,17 +537,28 @@ public class TVersionVector implements org.apache.thrift.TBase<TVersionVector, T
     public void write(org.apache.thrift.protocol.TProtocol prot, TVersionVector struct) throws org.apache.thrift.TException {
       TTupleProtocol oprot = (TTupleProtocol) prot;
       BitSet optionals = new BitSet();
-      if (struct.isSetVersions()) {
+      if (struct.isSetVersionKeys()) {
         optionals.set(0);
       }
-      oprot.writeBitSet(optionals, 1);
-      if (struct.isSetVersions()) {
+      if (struct.isSetVersionValues()) {
+        optionals.set(1);
+      }
+      oprot.writeBitSet(optionals, 2);
+      if (struct.isSetVersionKeys()) {
         {
-          oprot.writeI32(struct.versions.size());
-          for (Map.Entry<String, Long> _iter15 : struct.versions.entrySet())
+          oprot.writeI32(struct.versionKeys.size());
+          for (String _iter24 : struct.versionKeys)
           {
-            oprot.writeString(_iter15.getKey());
-            oprot.writeI64(_iter15.getValue());
+            oprot.writeString(_iter24);
+          }
+        }
+      }
+      if (struct.isSetVersionValues()) {
+        {
+          oprot.writeI32(struct.versionValues.size());
+          for (long _iter25 : struct.versionValues)
+          {
+            oprot.writeI64(_iter25);
           }
         }
       }
@@ -427,21 +567,32 @@ public class TVersionVector implements org.apache.thrift.TBase<TVersionVector, T
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, TVersionVector struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      BitSet incoming = iprot.readBitSet(1);
+      BitSet incoming = iprot.readBitSet(2);
       if (incoming.get(0)) {
         {
-          org.apache.thrift.protocol.TMap _map16 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.I64, iprot.readI32());
-          struct.versions = new HashMap<String,Long>(2*_map16.size);
-          String _key17;
-          long _val18;
-          for (int _i19 = 0; _i19 < _map16.size; ++_i19)
+          org.apache.thrift.protocol.TList _list26 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
+          struct.versionKeys = new ArrayList<String>(_list26.size);
+          String _elem27;
+          for (int _i28 = 0; _i28 < _list26.size; ++_i28)
           {
-            _key17 = iprot.readString();
-            _val18 = iprot.readI64();
-            struct.versions.put(_key17, _val18);
+            _elem27 = iprot.readString();
+            struct.versionKeys.add(_elem27);
           }
         }
-        struct.setVersionsIsSet(true);
+        struct.setVersionKeysIsSet(true);
+      }
+      if (incoming.get(1)) {
+        {
+          org.apache.thrift.protocol.TList _list29 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.I64, iprot.readI32());
+          struct.versionValues = new ArrayList<Long>(_list29.size);
+          long _elem30;
+          for (int _i31 = 0; _i31 < _list29.size; ++_i31)
+          {
+            _elem30 = iprot.readI64();
+            struct.versionValues.add(_elem30);
+          }
+        }
+        struct.setVersionValuesIsSet(true);
       }
     }
   }

@@ -1,7 +1,6 @@
 package snapple.crdts.datatypes
 
-import org.scalatest.WordSpecLike
-import org.scalatest.Matchers
+import org.scalatest.{WordSpecLike, Matchers}
 
 import java.util.UUID
 

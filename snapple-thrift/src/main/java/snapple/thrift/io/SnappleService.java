@@ -1736,16 +1736,16 @@ public class SnappleService {
             case 1: // VALUES
               if (schemeField.type == org.apache.thrift.protocol.TType.MAP) {
                 {
-                  org.apache.thrift.protocol.TMap _map20 = iprot.readMapBegin();
-                  struct.values = new HashMap<String,TDataType>(2*_map20.size);
-                  String _key21;
-                  TDataType _val22;
-                  for (int _i23 = 0; _i23 < _map20.size; ++_i23)
+                  org.apache.thrift.protocol.TMap _map32 = iprot.readMapBegin();
+                  struct.values = new HashMap<String,TDataType>(2*_map32.size);
+                  String _key33;
+                  TDataType _val34;
+                  for (int _i35 = 0; _i35 < _map32.size; ++_i35)
                   {
-                    _key21 = iprot.readString();
-                    _val22 = new TDataType();
-                    _val22.read(iprot);
-                    struct.values.put(_key21, _val22);
+                    _key33 = iprot.readString();
+                    _val34 = new TDataType();
+                    _val34.read(iprot);
+                    struct.values.put(_key33, _val34);
                   }
                   iprot.readMapEnd();
                 }
@@ -1773,10 +1773,10 @@ public class SnappleService {
           oprot.writeFieldBegin(VALUES_FIELD_DESC);
           {
             oprot.writeMapBegin(new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.STRUCT, struct.values.size()));
-            for (Map.Entry<String, TDataType> _iter24 : struct.values.entrySet())
+            for (Map.Entry<String, TDataType> _iter36 : struct.values.entrySet())
             {
-              oprot.writeString(_iter24.getKey());
-              _iter24.getValue().write(oprot);
+              oprot.writeString(_iter36.getKey());
+              _iter36.getValue().write(oprot);
             }
             oprot.writeMapEnd();
           }
@@ -1807,10 +1807,10 @@ public class SnappleService {
         if (struct.isSetValues()) {
           {
             oprot.writeI32(struct.values.size());
-            for (Map.Entry<String, TDataType> _iter25 : struct.values.entrySet())
+            for (Map.Entry<String, TDataType> _iter37 : struct.values.entrySet())
             {
-              oprot.writeString(_iter25.getKey());
-              _iter25.getValue().write(oprot);
+              oprot.writeString(_iter37.getKey());
+              _iter37.getValue().write(oprot);
             }
           }
         }
@@ -1822,16 +1822,16 @@ public class SnappleService {
         BitSet incoming = iprot.readBitSet(1);
         if (incoming.get(0)) {
           {
-            org.apache.thrift.protocol.TMap _map26 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-            struct.values = new HashMap<String,TDataType>(2*_map26.size);
-            String _key27;
-            TDataType _val28;
-            for (int _i29 = 0; _i29 < _map26.size; ++_i29)
+            org.apache.thrift.protocol.TMap _map38 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+            struct.values = new HashMap<String,TDataType>(2*_map38.size);
+            String _key39;
+            TDataType _val40;
+            for (int _i41 = 0; _i41 < _map38.size; ++_i41)
             {
-              _key27 = iprot.readString();
-              _val28 = new TDataType();
-              _val28.read(iprot);
-              struct.values.put(_key27, _val28);
+              _key39 = iprot.readString();
+              _val40 = new TDataType();
+              _val40.read(iprot);
+              struct.values.put(_key39, _val40);
             }
           }
           struct.setValuesIsSet(true);

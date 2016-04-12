@@ -1,7 +1,6 @@
 package snapple.crdts.datatypes
 
-import org.scalatest.WordSpecLike
-import org.scalatest.Matchers
+import org.scalatest.{WordSpecLike, Matchers}
 
 import java.util.UUID
 
@@ -25,7 +24,7 @@ class ORSetSpec extends WordSpecLike with Matchers {
   val user4 = """{"username":"steph","password":"curry"}"""
 
 
- "A ORSet" must {
+ "An ORSet" must {
 
     "be able to add user" in {
       val c1 = ORSet()
