@@ -1,6 +1,6 @@
 package snapple.cluster.io
 
-import snapple.thrift.io.{TDataType, TOptionalString, TOptionalDataType, TOptionalElementType, SnappleService}
+import snapple.thrift.io._
 
 import snapple.thrift.serialization.DataSerializer
 
@@ -12,6 +12,7 @@ import org.apache.thrift.server.TNonblockingServer
 import org.apache.thrift.transport.TNonblockingServerSocket
 
 import java.util.{Map ⇒ JMap}
+import java.nio.ByteBuffer
 
 import scala.collection.JavaConverters._
 
@@ -43,19 +44,19 @@ case class ReplicaServer(private val keyValueStore: KeyValueStore, port: Int) {
 
     override def propagate(values: JMap[String, TDataType]): Unit = {
       logger.info(s"received propagation")
-      val deserialized = values.asScala.toMap.map {
+      /*val deserialized = values.asScala.toMap.map {
         case (k, v) ⇒ (k → DataSerializer.deserialize(v))
       }
-      keyValueStore.merge(deserialized)
+
+      keyValueStore.merge(deserialized)*/
     }
 
-    override def createEntry(key: String, dataType: String, elementType: TOptionalString): Boolean = ???
-
+    override def createEntry(key: String, dataType: String, elementType: Int): Boolean =
     override def removeEntry(key: String): Boolean = ???
 
     override def getEntry(key: String): TOptionalDataType = ???
 
-    override def modifyEntry(key: String, operation: String, element: TOptionalElementType): Boolean = ???
+    override def modifyEntry(key: String, operation: String, element: ByteBuffer): Boolean = ???
 
   }
 }

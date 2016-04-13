@@ -12,6 +12,7 @@ object ThriftElementType {
     case _ => throw new IllegalArgumentException(s"Invalid thrift element type id $id")
   }
 }
+
 sealed trait ThriftElementType { val id: Int }
 case object NoElementType extends ThriftElementType { override val id: Int = 0 }
 case object BooleanElementType extends ThriftElementType { override val id: Int = 1 }

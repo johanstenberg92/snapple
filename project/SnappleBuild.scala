@@ -46,11 +46,18 @@ object SnappleBuild extends Build {
     dependencies = Seq(crdts)
   ).settings(thriftSettings: _*)
 
+  lazy val clusterSettings = Seq(
+    libraryDependencies ++= Seq(
+      Dependencies.scalaTest,
+      Dependencies.scopt
+    )
+  )
+
   lazy val cluster = Project(
     id = "snapple-cluster",
     base = file("snapple-cluster"),
     dependencies = Seq(thrift)
-  )
+  ).settings(clusterSettings: _*)
 
   lazy val remote = Project(
     id = "snapple-remote",

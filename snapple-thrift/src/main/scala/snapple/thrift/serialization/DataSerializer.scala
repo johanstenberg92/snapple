@@ -12,8 +12,8 @@ object DataSerializer {
   private val ORSetId = 1
   private val VersionVectorId = 2
 
-  def serialize(dataType: DataType, thriftType: ThriftElementType = NoElementType): TDataType = dataType match {
-    case orset: ORSet[_]              ⇒ TDataType.orset(ORSetSerializer.serialize(orset, thriftType))
+  def serialize(dataType: DataType, elementType: ThriftElementType = NoElementType): TDataType = dataType match {
+    case orset: ORSet[_]              ⇒ TDataType.orset(ORSetSerializer.serialize(orset, elementType))
     case versionVector: VersionVector ⇒ TDataType.versionVector(VersionVectorSerializer.serialize(versionVector))
   }
 
