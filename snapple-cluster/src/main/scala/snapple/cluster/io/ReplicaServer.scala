@@ -12,9 +12,8 @@ import org.apache.thrift.server.TNonblockingServer
 import org.apache.thrift.transport.TNonblockingServerSocket
 
 import java.util.{Map ⇒ JMap}
-import java.nio.ByteBuffer
 
-import scala.collection.JavaConverters._
+import java.nio.ByteBuffer
 
 case class ReplicaServer(private val keyValueStore: KeyValueStore, port: Int) {
 
@@ -44,17 +43,23 @@ case class ReplicaServer(private val keyValueStore: KeyValueStore, port: Int) {
 
     override def propagate(values: JMap[String, TDataType]): Unit = {
       logger.info(s"received propagation")
-      /*val deserialized = values.asScala.toMap.map {
-        case (k, v) ⇒ (k → DataSerializer.deserialize(v))
-      }
 
-      keyValueStore.merge(deserialized)*/
+      val deserialized = ThriftConverter.parsePropagate(values)
+
+      keyValueStore.merge(deserialized)
     }
 
-    override def createEntry(key: String, dataType: String, elementType: Int): Boolean =
-    override def removeEntry(key: String): Boolean = ???
+    override def createEntry(key: String, dataType: String, elementType: Int): Boolean = keyValueStore.entry(key) match {
+      case None =>
+        val (d, e) = ThriftConverter.parseCreateEntry(dataType, elementType)
+        keyValueStore.createEntry(key, d, e)
+      case _ => false
+    }
 
-    override def getEntry(key: String): TOptionalDataType = ???
+
+    override def removeEntry(key: String): Boolean = keyValueStore.removeEntry(key)
+
+    override def getEntry(key: String): TOptionalDataType = ThriftConverter.convertGetEntry(keyValueStore.entry(key))
 
     override def modifyEntry(key: String, operation: String, element: ByteBuffer): Boolean = ???
 

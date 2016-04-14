@@ -4,6 +4,8 @@ import java.util.concurrent.atomic.AtomicLong
 
 object VersionVector {
 
+  val empty = VersionVector()
+
   def apply(host: String, timestamp: Long): VersionVector =
     new VersionVector(Map(host -> timestamp))
 

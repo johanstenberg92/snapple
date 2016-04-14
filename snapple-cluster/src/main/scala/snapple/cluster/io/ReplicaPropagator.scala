@@ -40,7 +40,7 @@ case class ReplicaPropagator(private val store: KeyValueStore, private val initi
 
     override def run(): Unit = {
       val serialized = store.entries.map {
-        case (k, v) => (k -> DataSerializer.serialize(v))
+        case (k, (dataType, elementType)) => (k -> DataSerializer.serialize(dataType, elementType))
       }
 
       clients.foreach {

@@ -2,6 +2,8 @@ package snapple.crdts.datatypes
 
 object ORSet {
 
+  val empty: ORSet[Any] = ORSet[Any]()
+
   private[snapple] type Dot = VersionVector
 
   private[snapple] def subtractDots(dot: Dot, subtraction: VersionVector): Dot = {

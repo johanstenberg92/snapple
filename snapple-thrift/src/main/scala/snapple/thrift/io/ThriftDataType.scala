@@ -1,7 +1,7 @@
 package snapple.thrift.io
 
 object ThriftDataType {
-  def apply(dataType: String): ThriftDataType = id match {
+  def apply(dataType: String): ThriftDataType = dataType match {
     case "ORSet" => ORSetDataType
     case "VersionVector" => VersionVectorDataType
     case _ => throw new IllegalArgumentException(s"Invalid thrift data type $dataType")
