@@ -15,13 +15,15 @@ import java.util.{Map ⇒ JMap}
 
 import java.nio.ByteBuffer
 
-case class ReplicaServer(private val keyValueStore: KeyValueStore, port: Int) {
+case class ReplicaServer(private val keyValueStore: KeyValueStore, port: Int, replicaIdentifier: String) {
 
   private val logger = Logger[this.type]
 
   private val handler = SnappleServiceHandler(keyValueStore)
 
   private val processor = new SnappleService.Processor(handler)
+
+  private val thriftOpHandler: ThriftOpHandler = ThriftOpHandler(replicaIdentifier)
 
   private val server = {
     val serverTransport = new TNonblockingServerSocket(port)
@@ -44,24 +46,30 @@ case class ReplicaServer(private val keyValueStore: KeyValueStore, port: Int) {
     override def propagate(values: JMap[String, TDataType]): Unit = {
       logger.info(s"received propagation")
 
-      val deserialized = ThriftConverter.parsePropagate(values)
+      val deserialized = ThriftMethodHelper.parsePropagate(values)
 
       keyValueStore.merge(deserialized)
     }
 
     override def createEntry(key: String, dataType: String, elementType: Int): Boolean = keyValueStore.entry(key) match {
       case None =>
-        val (d, e) = ThriftConverter.parseCreateEntry(dataType, elementType)
-        keyValueStore.createEntry(key, d, e)
+        val keyValueEntry = ThriftMethodHelper.parseCreateEntry(dataType, elementType)
+        keyValueStore.createEntry(key, keyValueEntry)
       case _ => false
     }
 
 
     override def removeEntry(key: String): Boolean = keyValueStore.removeEntry(key)
 
-    override def getEntry(key: String): TOptionalDataType = ThriftConverter.convertGetEntry(keyValueStore.entry(key))
+    override def getEntry(key: String): TOptionalDataType = ThriftMethodHelper.convertGetEntry(keyValueStore.entry(key))
 
-    override def modifyEntry(key: String, operation: String, element: ByteBuffer): Boolean = ???
+    override def modifyEntry(key: String, operation: String, element: ByteBuffer): Boolean = keyValueStore.entry(key) match {
+      case Some(kve) =>
+        val op = thriftOpHandler.handleOp(kve.thriftDataType, kve.elementType, ThriftOpType(operation), element)
+        kve.modify(op)
+        true
+      case None => false
+    }
 
   }
 }

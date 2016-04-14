@@ -11,7 +11,7 @@ object Main {
 
     val store = KeyValueStore()
 
-    val server = ReplicaServer(store, config.port)
+    val server = ReplicaServer(store, config.port, config.replicaIdentifier)
 
     val initialClients = config.replicaAddresses.map {
       case (hostname, port) ⇒ ReplicaClient(hostname, port)

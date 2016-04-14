@@ -8,23 +8,25 @@ import java.util.concurrent.atomic.AtomicReference
 
 case class KeyValueStore() {
 
-  private val store: AtomicReference[Map[String, (DataType, ThriftElementType)]] = new AtomicReference()
+  private val store: AtomicReference[Map[String, KeyValueEntry]] = new AtomicReference()
 
-  def merge(other: Map[String, (DataType, ThriftElementType)]): Unit = {
-    val mergeFunction = (map: Map[String, (DataType, ThriftElementType)]) => {
-      val mergedMap: Map[String, (DataType, ThriftElementType)] = (other.keySet ++ map.keySet).map {
-        case key =>
+  def merge(other: Map[String, KeyValueEntry]): Unit = {
+    val mergeFunction = (map: Map[String, KeyValueEntry]) ⇒ {
+      val mergedMap: Map[String, KeyValueEntry] = (other.keySet ++ map.keySet).map {
+        case key ⇒
           val value = ((map.get(key), other.get(key)): @unchecked) match {
-            case (Some((d1, e1)), None) => (d1, e1)
-            case (None, Some((d2, e2))) => (d2, e2)
-            case (Some((d1, e1)), Some((d2, e2))) => d1 match {
-              case v: VersionVector if d2.isInstanceOf[VersionVector] => (v.merge(d2.asInstanceOf[VersionVector]), e1)
-              case o: ORSet[_] if d2.isInstanceOf[ORSet[_]] => (o.asInstanceOf[ORSet[Any]].merge(d2.asInstanceOf[ORSet[Any]]), e1)
-              case _ => (d1, e1)
+            case (Some(KeyValueEntry(d1, e1)), None) ⇒ KeyValueEntry(d1, e1)
+            case (None, Some(KeyValueEntry(d2, e2))) ⇒ KeyValueEntry(d2, e2)
+            case (Some(KeyValueEntry(d1, e1)), Some(KeyValueEntry(d2, e2))) ⇒ d1 match {
+              case v: VersionVector if d2.isInstanceOf[VersionVector] ⇒
+                KeyValueEntry(v.merge(d2.asInstanceOf[VersionVector]), e1)
+              case o: ORSet[_] if d2.isInstanceOf[ORSet[_]] ⇒
+                KeyValueEntry(o.asInstanceOf[ORSet[Any]].merge(d2.asInstanceOf[ORSet[Any]]), e1)
+              case _ ⇒ KeyValueEntry(d1, e1)
             }
           }
 
-          (key -> value)
+          (key → value)
       }.toMap
 
       Some(mergedMap)
@@ -33,18 +35,17 @@ case class KeyValueStore() {
     casHelper(mergeFunction)
   }
 
-
-  def createEntry(key: String, dataType: DataType, elementType: ThriftElementType): Boolean = {
-    val createEntryFunction = (map: Map[String, (DataType, ThriftElementType)]) => {
+  def createEntry(key: String, keyValueEntry: KeyValueEntry): Boolean = {
+    val createEntryFunction = (map: Map[String, KeyValueEntry]) ⇒ {
       if (map.contains(key)) None
-      else Some(map + (key -> (dataType, elementType)))
+      else Some(map + (key → keyValueEntry))
     }
 
     casHelper(createEntryFunction)
   }
 
   def removeEntry(key: String): Boolean = {
-    val removeEntryFunction = (map: Map[String, (DataType, ThriftElementType)]) => {
+    val removeEntryFunction = (map: Map[String, KeyValueEntry]) ⇒ {
       if (!map.contains(key)) None
       else Some(map - key)
     }
@@ -52,11 +53,11 @@ case class KeyValueStore() {
     casHelper(removeEntryFunction)
   }
 
-  def entry(key: String): Option[(DataType, ThriftElementType)] = store.get.get(key)
+  def entry(key: String): Option[KeyValueEntry] = store.get.get(key)
 
-  def entries: Map[String, (DataType, ThriftElementType)] = store.get
+  def entries: Map[String, KeyValueEntry] = store.get
 
-  private def casHelper(func: Map[String, (DataType, ThriftElementType)] => Option[Map[String, (DataType, ThriftElementType)]]): Boolean = {
+  private def casHelper(func: Map[String, KeyValueEntry] ⇒ Option[Map[String, KeyValueEntry]]): Boolean = {
     var success = false
 
     var aborted = false
@@ -64,8 +65,8 @@ case class KeyValueStore() {
     do {
       val current = store.get
       func(current) match {
-        case Some(modified) => store.compareAndSet(current, modified)
-        case None => aborted = true
+        case Some(modified) ⇒ success = store.compareAndSet(current, modified)
+        case None           ⇒ aborted = true
       }
     } while (!success && !aborted)
 

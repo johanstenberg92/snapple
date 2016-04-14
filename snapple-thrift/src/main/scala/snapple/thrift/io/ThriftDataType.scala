@@ -8,6 +8,6 @@ object ThriftDataType {
   }
 }
 
-sealed trait ThriftDataType
-case object ORSetDataType extends ThriftDataType
-case object VersionVectorDataType extends ThriftDataType
+sealed trait ThriftDataType { val id: String }
+case object ORSetDataType extends ThriftDataType { override val id: String = "ORSet" }
+case object VersionVectorDataType extends ThriftDataType { override val id: String = "VersionVector" }

@@ -24,7 +24,7 @@ object DataSerializer {
     }
 
   @inline
-  private[serialization] def serializeElementType(value: Any): ByteBuffer = value match {
+  private[thrift] def serializeElementType(value: Any): ByteBuffer = value match {
     case boolean: Boolean ⇒
       val v: Byte = if (boolean) 1 else 0
       ByteBuffer.allocate(1).put(v)
@@ -37,7 +37,7 @@ object DataSerializer {
   }
 
   @inline
-  private[serialization] def deserializeElementType(bb: ByteBuffer, elementType: ThriftElementType): Any = {
+  private[thrift] def deserializeElementType(bb: ByteBuffer, elementType: ThriftElementType): Any = {
     val positionedByteBuffer = bb.position(0).asInstanceOf[ByteBuffer]
 
     elementType match {

@@ -2,7 +2,7 @@ package snapple.cluster.io
 
 import snapple.thrift.serialization.DataSerializer
 
-import snapple.cluster.KeyValueStore
+import snapple.cluster.{KeyValueStore, KeyValueEntry}
 
 import grizzled.slf4j.Logger
 
@@ -40,7 +40,7 @@ case class ReplicaPropagator(private val store: KeyValueStore, private val initi
 
     override def run(): Unit = {
       val serialized = store.entries.map {
-        case (k, (dataType, elementType)) => (k -> DataSerializer.serialize(dataType, elementType))
+        case (k, KeyValueEntry(dataType, elementType)) => (k -> DataSerializer.serialize(dataType, elementType))
       }
 
       clients.foreach {
