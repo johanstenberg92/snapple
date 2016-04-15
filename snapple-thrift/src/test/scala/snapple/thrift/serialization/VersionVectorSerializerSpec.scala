@@ -6,7 +6,6 @@ import snapple.crdts.datatypes.VersionVector
 
 import org.scalatest.{WordSpecLike, Matchers}
 
-
 import java.util.UUID
 
 class VersionVectorSerializerSpec extends WordSpecLike with Matchers {
