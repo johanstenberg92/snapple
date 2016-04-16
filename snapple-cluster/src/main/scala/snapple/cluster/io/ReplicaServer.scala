@@ -75,7 +75,6 @@ case class ReplicaServer(keyValueStore: KeyValueStore, port: Int, replicaIdentif
 
     override def modifyEntry(key: String, operation: String, element: ByteBuffer): Boolean = keyValueStore.entry(key) match {
       case Some(kve) =>
-        println(element.order(java.nio.ByteOrder.LITTLE_ENDIAN).position(0).asInstanceOf[java.nio.ByteBuffer].getLong)
         val op = thriftOpHandler.handleOp(kve.thriftDataType, kve.elementType, ThriftOpType(operation), element)
         kve.modify(op)
         true

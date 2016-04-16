@@ -26,20 +26,24 @@ object DataSerializer {
       case VersionVectorId ⇒ (VersionVectorSerializer.deserialize(dataType.getVersionVector), NoElementType)
     }
 
-  private[snapple] def serializeElementType(value: Any): ByteBuffer = value match {
-    case boolean: Boolean ⇒
-      val v: Byte = if (boolean) 1 else 0
-      ByteBuffer.allocate(1).order(ThriftByteOrder).put(v)
-    case byte: Byte     ⇒ ByteBuffer.allocate(1).order(ThriftByteOrder).put(byte)
-    case int: Int       ⇒ ByteBuffer.allocate(4).order(ThriftByteOrder).putInt(int)
-    case long: Long     ⇒ ByteBuffer.allocate(8).order(ThriftByteOrder).putLong(long)
-    case double: Double ⇒ ByteBuffer.allocate(8).order(ThriftByteOrder).putDouble(double)
-    case string: String ⇒ ByteBuffer.wrap(string.getBytes(StandardCharsets.UTF_8)).order(ThriftByteOrder)
-    case _              ⇒ throw new IllegalArgumentException(s"Invalid thrift data type $value")
+  private[snapple] def serializeElementType(value: Any): ByteBuffer = {
+    val bb = value match {
+      case boolean: Boolean ⇒
+        val v: Byte = if (boolean) 1 else 0
+        ByteBuffer.allocate(1).put(v)
+      case byte: Byte     ⇒ ByteBuffer.allocate(1).put(byte)
+      case int: Int       ⇒ ByteBuffer.allocate(4).putInt(int)
+      case long: Long     ⇒ ByteBuffer.allocate(8).putLong(long)
+      case double: Double ⇒ ByteBuffer.allocate(8).putDouble(double)
+      case string: String ⇒ ByteBuffer.wrap(string.getBytes(StandardCharsets.UTF_8))
+      case _              ⇒ throw new IllegalArgumentException(s"Invalid thrift data type $value")
+    }
+
+    bb.order(ThriftByteOrder).rewind.asInstanceOf[ByteBuffer]
   }
 
   private[snapple] def deserializeElementType(bb: ByteBuffer, elementType: ThriftElementType): Any = {
-    val positionedByteBuffer = bb.position(0).asInstanceOf[ByteBuffer].order(ThriftByteOrder)
+    val positionedByteBuffer = bb.order(ThriftByteOrder)
 
     elementType match {
       case BooleanElementType ⇒ positionedByteBuffer.get == 1

@@ -169,8 +169,6 @@ class VersionVectorSpec extends WordSpecLike with Matchers {
       merged2.contains(node2) should be (true)
       merged2.contains(node3) should be (true)
 
-      println(vv3_2)
-      println(merged1)
       vv3_2 < merged1 should be (true)
       vv5_1 < merged1 should be (true)
 

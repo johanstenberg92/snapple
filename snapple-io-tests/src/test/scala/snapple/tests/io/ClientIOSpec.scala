@@ -8,7 +8,7 @@ import snapple.thrift.io._
 
 import snapple.client.io.SnappleClient
 
-import org.scalatest.{WordSpecLike, Matchers, BeforeAndAfter}
+import org.scalatest.{WordSpecLike, Matchers, BeforeAndAfterAll}
 
 import org.scalatest.concurrent.ScalaFutures
 
@@ -16,24 +16,21 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 import java.util.UUID
 
-class ClientSpecMultiJvmServer extends WordSpecLike {
-
-  val identifier = "<identifier>"
-
-  val TenSeconds = 10 * 1000
-
-  val server = SnappleServer.run(Configuration(replicaIdentifier = identifier))
-
-  Thread.sleep(TenSeconds)
-
-  server.shutdown
-}
-
-class ClientSpecMultiJvmClient extends WordSpecLike with Matchers with ScalaFutures {
+class ClientIOSpec extends WordSpecLike with Matchers with ScalaFutures with BeforeAndAfterAll {
 
   val identifier = "<identifier>"
 
   val host = "localhost"
+
+  var server: SnappleServer = null
+
+  override def beforeAll() {
+    server = SnappleServer.run(Configuration(replicaIdentifier = identifier))
+  }
+
+  override def afterAll() {
+    server.shutdown
+  }
 
   "A client" must {
     "be able to connect, ping and disconnect" in {
@@ -115,6 +112,24 @@ class ClientSpecMultiJvmClient extends WordSpecLike with Matchers with ScalaFutu
       val vv = client.entry(key).futureValue.getOrElse(fail).asVersionVector
 
       vv.versionAt(identifier) should not be (-1)
+
+      client.disconnect
+    }
+
+    "be able to connect, create string orset, modify, read and disconnect" in {
+      val client = SnappleClient(host)
+
+      val key = UUID.randomUUID.toString
+
+      client.createEntry(key, ORSetDataType, StringElementType).futureValue should be (true)
+
+      val element = "Yo Whats UPP"
+
+      client.modifyEntry(key, AddOpType, Some(element)).futureValue should be (true)
+
+      val orset = client.entry(key).futureValue.getOrElse(fail).asORSet
+
+      orset.elements should be (Set(element))
 
       client.disconnect
     }
