@@ -28,17 +28,13 @@ case class SnappleClient(hostname: String, port: Int = SnappleClient.DefaultPort
 
   private val logger = Logger[this.type]
 
-  private val (client, socket): (SnappleService.AsyncClient, TNonblockingSocket) = {
-    val protocolFactory = new TBinaryProtocol.Factory
-    val clientManager = new TAsyncClientManager
-    val transport = new TNonblockingSocket(hostname, port)
+  private val protocolFactory = new TBinaryProtocol.Factory
+  private val clientManager = new TAsyncClientManager
+  private val socket = new TNonblockingSocket(hostname, port)
 
-    val client = new SnappleService.AsyncClient(protocolFactory, clientManager, transport)
+  logger.info(s"connected snapple client to $hostname:$port")
 
-    logger.info(s"connected replica client to $hostname:$port")
-
-    (client, transport)
-  }
+  private def client: SnappleService.AsyncClient = new SnappleService.AsyncClient(protocolFactory, clientManager, socket)
 
   def disconnect: Unit = socket.close
 
@@ -51,11 +47,13 @@ case class SnappleClient(hostname: String, port: Int = SnappleClient.DefaultPort
   private case class PingCallback(promise: Promise[Unit]) extends AsyncMethodCallback[SnappleService.AsyncClient.ping_call] {
 
     override def onComplete(result: SnappleService.AsyncClient.ping_call): Unit = {
+      println("pong")
       logger.info(s"successfully pinged $hostname:$port")
       promise.success(Unit)
     }
 
     override def onError(error: Exception): Unit = {
+      println(error)
       logger.error(s"error pinging $hostname:$port", error)
       promise.failure(error)
     }

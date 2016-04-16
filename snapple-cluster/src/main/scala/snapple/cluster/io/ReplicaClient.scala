@@ -17,17 +17,15 @@ case class ReplicaClient(hostname: String, port: Int) {
 
   private val logger = Logger[this.type]
 
-  private val (client, socket): (SnappleService.AsyncClient, TNonblockingSocket) = {
-    val protocolFactory = new TBinaryProtocol.Factory
-    val clientManager = new TAsyncClientManager
-    val transport = new TNonblockingSocket(hostname, port)
+  private val protocolFactory = new TBinaryProtocol.Factory
 
-    val client = new SnappleService.AsyncClient(protocolFactory, clientManager, transport)
+  private val clientManager = new TAsyncClientManager
 
-    logger.info(s"connected replica client to $hostname:$port")
+  private val socket = new TNonblockingSocket(hostname, port)
 
-    (client, transport)
-  }
+  logger.info(s"connected replica client to $hostname:$port")
+
+  private def client: SnappleService.AsyncClient = new SnappleService.AsyncClient(protocolFactory, clientManager, socket)
 
   def shutdown: Unit = socket.close
 

@@ -12,11 +12,12 @@ import org.scalatest.{WordSpecLike, Matchers, BeforeAndAfterAll}
 
 import org.scalatest.concurrent.ScalaFutures
 
+import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
 import java.util.UUID
 
-class ClientIOSpec extends WordSpecLike with Matchers with ScalaFutures with BeforeAndAfterAll {
+class SnappleClientIOSpec extends WordSpecLike with Matchers with ScalaFutures with BeforeAndAfterAll {
 
   val identifier = "<identifier>"
 
@@ -132,6 +133,32 @@ class ClientIOSpec extends WordSpecLike with Matchers with ScalaFutures with Bef
       orset.elements should be (Set(element))
 
       client.disconnect
+    }
+
+    "be able to use two clients at the same time" in {
+      val c1 = SnappleClient(host)
+      val c2 = SnappleClient(host)
+
+      val k1 = UUID.randomUUID.toString
+      val k2 = UUID.randomUUID.toString
+
+      val f1 = c1.createEntry(k1, ORSetDataType, StringElementType)
+      val f2 = c2.createEntry(k2, ORSetDataType, StringElementType)
+
+      f1.futureValue should be (true)
+      f2.futureValue should be (true)
+
+      c1.disconnect
+      c2.disconnect
+    }
+
+    "be able to call multiple methods simultaneously with client" in {
+      val size = 2
+      val client = SnappleClient(host)
+
+      val future = Future.sequence((0 until size).toSeq.map(_ => client.ping))
+
+      future.futureValue should be ((0 until size).map(_ => ()))
     }
   }
 }
