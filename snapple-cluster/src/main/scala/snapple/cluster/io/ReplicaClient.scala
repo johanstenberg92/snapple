@@ -17,7 +17,7 @@ case class ReplicaClient(hostname: String, port: Int) {
 
   private val logger = Logger[this.type]
 
-  private lazy val client: SnappleService.AsyncClient = {
+  private val (client, socket): (SnappleService.AsyncClient, TNonblockingSocket) = {
     val protocolFactory = new TBinaryProtocol.Factory
     val clientManager = new TAsyncClientManager
     val transport = new TNonblockingSocket(hostname, port)
@@ -26,8 +26,10 @@ case class ReplicaClient(hostname: String, port: Int) {
 
     logger.info(s"connected replica client to $hostname:$port")
 
-    client
+    (client, transport)
   }
+
+  def shutdown: Unit = socket.close
 
   def ping: Future[Unit] = {
     val promise = Promise[Unit]()

@@ -1,7 +1,5 @@
 package snapple.cluster.utils
 
-import java.util.UUID
-
 object ArgParser {
 
   val DefaultPort = 9000
@@ -26,9 +24,3 @@ object ArgParser {
     case None => throw new IllegalArgumentException("config couldn't be parsed")
   }
 }
-
-case class Configuration(
-  port: Int = ArgParser.DefaultPort,
-  replicaIdentifier: String = UUID.randomUUID.toString,
-  replicaAddresses: Seq[(String, Int)] = Seq.empty
-)

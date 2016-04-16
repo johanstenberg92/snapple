@@ -4,7 +4,7 @@ import snapple.thrift.io._
 
 import snapple.thrift.serialization.DataSerializer
 
-import snapple.cluster.KeyValueStore
+import snapple.cluster.{SnappleServer, KeyValueStore}
 
 import grizzled.slf4j.Logger
 
@@ -12,10 +12,11 @@ import org.apache.thrift.server.TNonblockingServer
 import org.apache.thrift.transport.TNonblockingServerSocket
 
 import java.util.{Map ⇒ JMap}
+import java.util.concurrent.{ExecutorService, Executors}
 
 import java.nio.ByteBuffer
 
-case class ReplicaServer(private val keyValueStore: KeyValueStore, port: Int, replicaIdentifier: String) {
+case class ReplicaServer(keyValueStore: KeyValueStore, port: Int, replicaIdentifier: String) {
 
   private val logger = Logger[this.type]
 
@@ -25,14 +26,23 @@ case class ReplicaServer(private val keyValueStore: KeyValueStore, port: Int, re
 
   private val thriftOpHandler: ThriftOpHandler = ThriftOpHandler(replicaIdentifier)
 
-  private val server = {
+  private val (server, executor): (TNonblockingServer, ExecutorService) = {
     val serverTransport = new TNonblockingServerSocket(port)
     val server = new TNonblockingServer(new TNonblockingServer.Args(serverTransport).processor(processor))
 
-    server.serve
+    val runnable = new Runnable { override def run(): Unit = server.serve }
+    val executor = Executors.newSingleThreadExecutor
+    executor.submit(runnable)
+
     logger.info(s"started replica server on port $port")
 
-    server
+    (server, executor)
+  }
+
+  def shutdown: Unit = {
+    logger.info("shutting down replica server")
+    server.stop
+    executor.shutdown
   }
 
   private case class SnappleServiceHandler(keyValueStore: KeyValueStore) extends SnappleService.Iface {
@@ -65,6 +75,7 @@ case class ReplicaServer(private val keyValueStore: KeyValueStore, port: Int, re
 
     override def modifyEntry(key: String, operation: String, element: ByteBuffer): Boolean = keyValueStore.entry(key) match {
       case Some(kve) =>
+        println(element.order(java.nio.ByteOrder.LITTLE_ENDIAN).position(0).asInstanceOf[java.nio.ByteBuffer].getLong)
         val op = thriftOpHandler.handleOp(kve.thriftDataType, kve.elementType, ThriftOpType(operation), element)
         kve.modify(op)
         true

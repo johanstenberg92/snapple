@@ -18,17 +18,17 @@ import scala.concurrent.{Future, Promise}
 
 import java.nio.ByteBuffer
 
-object Client {
+object SnappleClient {
 
   val DefaultPort = 9000
 
 }
 
-case class Client(hostname: String, port: Int = Client.DefaultPort) {
+case class SnappleClient(hostname: String, port: Int = SnappleClient.DefaultPort) {
 
   private val logger = Logger[this.type]
 
-  private lazy val client: SnappleService.AsyncClient = {
+  private val (client, socket): (SnappleService.AsyncClient, TNonblockingSocket) = {
     val protocolFactory = new TBinaryProtocol.Factory
     val clientManager = new TAsyncClientManager
     val transport = new TNonblockingSocket(hostname, port)
@@ -37,8 +37,10 @@ case class Client(hostname: String, port: Int = Client.DefaultPort) {
 
     logger.info(s"connected replica client to $hostname:$port")
 
-    client
+    (client, transport)
   }
+
+  def disconnect: Unit = socket.close
 
   def ping: Future[Unit] = {
     val promise = Promise[Unit]()
@@ -96,7 +98,7 @@ case class Client(hostname: String, port: Int = Client.DefaultPort) {
 
   }
 
-  def getEntry(key: String): Future[Option[SnappleEntry]] = {
+  def entry(key: String): Future[Option[SnappleEntry]] = {
     val promise = Promise[Option[SnappleEntry]]()
     client.getEntry(key, GetEntryCallback(promise))
     promise.future
@@ -124,6 +126,7 @@ case class Client(hostname: String, port: Int = Client.DefaultPort) {
     val promise = Promise[Boolean]()
 
     val bb = value.map(DataSerializer.serializeElementType).getOrElse(ByteBuffer.allocate(0))
+
     client.modifyEntry(key, operation.id, bb, ModifyEntryCallback(promise))
     promise.future
   }
@@ -139,5 +142,4 @@ case class Client(hostname: String, port: Int = Client.DefaultPort) {
     }
 
   }
-
 }

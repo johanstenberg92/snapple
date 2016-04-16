@@ -30,7 +30,7 @@ case class ReplicaPropagator(private val store: KeyValueStore, private val initi
 
   def removeClient(clientHostname: String, clientPort: Int): Unit = {
     clients = clients.filterNot {
-      case ReplicaClient(hostname, port) => hostname == clientHostname && port == clientPort
+      case ReplicaClient(hostname, port) ⇒ hostname == clientHostname && port == clientPort
     }
   }
 
@@ -40,14 +40,15 @@ case class ReplicaPropagator(private val store: KeyValueStore, private val initi
 
     override def run(): Unit = {
       val serialized = store.entries.map {
-        case (k, KeyValueEntry(dataType, elementType)) => (k -> DataSerializer.serialize(dataType, elementType))
+        case (k, KeyValueEntry(dataType, elementType)) ⇒ (k → DataSerializer.serialize(dataType, elementType))
       }
 
       clients.foreach {
-        case client =>
+        case client ⇒
           client.propagate(serialized).onFailure {
-            case error =>
+            case error ⇒
               logger.info(s"connection to ${client.hostname}:${client.port} failed with exception", error)
+              client.shutdown
               clients = clients - client
           }
       }
@@ -55,6 +56,12 @@ case class ReplicaPropagator(private val store: KeyValueStore, private val initi
 
   }
 
-  propagationExecutor.scheduleAtFixedRate(propagationRunnable, 0, SecondsBetweenPropagations, TimeUnit.SECONDS)
+  private val scheduledFuture = propagationExecutor
+    .scheduleAtFixedRate(propagationRunnable, 0, SecondsBetweenPropagations, TimeUnit.SECONDS)
+
+  def shutdown: Unit = {
+    scheduledFuture.cancel(false)
+    clients.foreach(_.shutdown)
+  }
 
 }

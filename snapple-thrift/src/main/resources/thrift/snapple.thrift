@@ -35,6 +35,6 @@ service SnappleService {
 
   TOptionalDataType getEntry(1: string key),
 
-  bool modifyEntry(1: string key, 2: string operation, 3: binary element)
+  bool modifyEntry(1: string key, 2: string operation, 3: binary element),
 
 }

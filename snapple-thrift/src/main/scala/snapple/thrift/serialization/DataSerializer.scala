@@ -5,12 +5,15 @@ import snapple.thrift.io._
 import snapple.crdts.datatypes.{DataType, VersionVector, ORSet}
 
 import java.nio.ByteBuffer
+import java.nio.ByteOrder
 import java.nio.charset.StandardCharsets
 
 object DataSerializer {
 
   private val ORSetId = 1
   private val VersionVectorId = 2
+
+  private val ThriftByteOrder = ByteOrder.LITTLE_ENDIAN
 
   def serialize(dataType: DataType, elementType: ThriftElementType = NoElementType): TDataType = dataType match {
     case orset: ORSet[_]              ⇒ TDataType.orset(ORSetSerializer.serialize(orset, elementType))
@@ -23,22 +26,20 @@ object DataSerializer {
       case VersionVectorId ⇒ (VersionVectorSerializer.deserialize(dataType.getVersionVector), NoElementType)
     }
 
-  @inline
   private[snapple] def serializeElementType(value: Any): ByteBuffer = value match {
     case boolean: Boolean ⇒
       val v: Byte = if (boolean) 1 else 0
-      ByteBuffer.allocate(1).put(v)
-    case byte: Byte     ⇒ ByteBuffer.allocate(1).put(byte)
-    case int: Int       ⇒ ByteBuffer.allocate(4).putInt(int)
-    case long: Long     ⇒ ByteBuffer.allocate(8).putLong(long)
-    case double: Double ⇒ ByteBuffer.allocate(8).putDouble(double)
-    case string: String ⇒ ByteBuffer.wrap(string.getBytes(StandardCharsets.UTF_8))
+      ByteBuffer.allocate(1).order(ThriftByteOrder).put(v)
+    case byte: Byte     ⇒ ByteBuffer.allocate(1).order(ThriftByteOrder).put(byte)
+    case int: Int       ⇒ ByteBuffer.allocate(4).order(ThriftByteOrder).putInt(int)
+    case long: Long     ⇒ ByteBuffer.allocate(8).order(ThriftByteOrder).putLong(long)
+    case double: Double ⇒ ByteBuffer.allocate(8).order(ThriftByteOrder).putDouble(double)
+    case string: String ⇒ ByteBuffer.wrap(string.getBytes(StandardCharsets.UTF_8)).order(ThriftByteOrder)
     case _              ⇒ throw new IllegalArgumentException(s"Invalid thrift data type $value")
   }
 
-  @inline
   private[snapple] def deserializeElementType(bb: ByteBuffer, elementType: ThriftElementType): Any = {
-    val positionedByteBuffer = bb.position(0).asInstanceOf[ByteBuffer]
+    val positionedByteBuffer = bb.position(0).asInstanceOf[ByteBuffer].order(ThriftByteOrder)
 
     elementType match {
       case BooleanElementType ⇒ positionedByteBuffer.get == 1
@@ -50,7 +51,7 @@ object DataSerializer {
         val bytes = Array.ofDim[Byte](positionedByteBuffer.remaining)
         positionedByteBuffer.get(bytes)
         new String(bytes, StandardCharsets.UTF_8)
-      case NoElementType ⇒ throw new IllegalArgumentException("error deserializing no element type")
+      case other ⇒ throw new IllegalArgumentException(s"error deserializing $other")
     }
   }
 

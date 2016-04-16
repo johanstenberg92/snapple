@@ -36,4 +36,9 @@ class KeyValueEntry(dataType: DataType, val elementType: ThriftElementType) {
     } while (!success)
   }
 
+  override def toString: String = {
+    val (d, e) = get
+    s"KeyValueEntry($d, $e)"
+  }
+
 }

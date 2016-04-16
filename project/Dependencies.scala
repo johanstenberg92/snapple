@@ -12,6 +12,8 @@ object Dependencies {
     val GrizzledLogging = "1.0.3"
 
     val Scopt = "3.4.0"
+
+    val Logback = "1.1.7"
   }
 
   val scalaTest = "org.scalatest" %% "scalatest" % Versions.ScalaTest % "test"
@@ -22,4 +24,5 @@ object Dependencies {
 
   val scopt = "com.github.scopt" %% "scopt" % Versions.Scopt
 
+  val logbackLogging = "ch.qos.logback" % "logback-classic" % Versions.Logback
 }

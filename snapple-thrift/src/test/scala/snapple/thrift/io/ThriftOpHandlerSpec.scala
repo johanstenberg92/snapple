@@ -17,7 +17,7 @@ class ThriftOpHandlerSpec extends WordSpecLike with Matchers {
   "The ThriftOpHandler" must {
 
     "handle version vector op" in {
-      val op = opHandler.handleOp(VersionVectorDataType, NoElementType, ThriftAddOpType, emptyBB)
+      val op = opHandler.handleOp(VersionVectorDataType, NoElementType, AddOpType, emptyBB)
 
       val vv = op(VersionVector()).asInstanceOf[VersionVector]
 
@@ -30,7 +30,7 @@ class ThriftOpHandlerSpec extends WordSpecLike with Matchers {
 
       val bb = ByteBuffer.allocate(8)
       bb.putLong(target)
-      val op = opHandler.handleOp(ORSetDataType, LongElementType, ThriftAddOpType, bb)
+      val op = opHandler.handleOp(ORSetDataType, LongElementType, AddOpType, bb)
       val orset = op(ORSet()).asInstanceOf[ORSet[Any]]
 
       orset.elements should be (Set(target))
@@ -45,7 +45,7 @@ class ThriftOpHandlerSpec extends WordSpecLike with Matchers {
 
       val bb = ByteBuffer.allocate(8)
       bb.putLong(target)
-      val op = opHandler.handleOp(ORSetDataType, LongElementType, ThriftRemoveOpType, bb)
+      val op = opHandler.handleOp(ORSetDataType, LongElementType, RemoveOpType, bb)
       val orset2 = op(orset).asInstanceOf[ORSet[Any]]
 
       orset2.elements should be (Set.empty)
@@ -54,7 +54,7 @@ class ThriftOpHandlerSpec extends WordSpecLike with Matchers {
     "handle or set clear op" in {
       val orset = ORSet() + (host, 1337L)
 
-      val op = opHandler.handleOp(ORSetDataType, LongElementType, ThriftClearOpType, emptyBB)
+      val op = opHandler.handleOp(ORSetDataType, LongElementType, ClearOpType, emptyBB)
       val orset2 = op(orset).asInstanceOf[ORSet[Any]]
 
       orset2.elements should be (Set.empty)

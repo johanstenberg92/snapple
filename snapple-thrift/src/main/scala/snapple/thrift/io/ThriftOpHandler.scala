@@ -23,13 +23,13 @@ case class ThriftOpHandler(host: String) {
     operation:   ThriftOpType,
     buffer:      ByteBuffer
   ): (DataType ⇒ DataType) = operation match {
-    case ThriftAddOpType ⇒
+    case AddOpType ⇒
       val element = DataSerializer.deserializeElementType(buffer, elementType)
       (dataType: DataType) ⇒ (dataType.asInstanceOf[ORSet[Any]] + (host, element))
-    case ThriftRemoveOpType ⇒
+    case RemoveOpType ⇒
       val element = DataSerializer.deserializeElementType(buffer, elementType)
       (dataType: DataType) ⇒ (dataType.asInstanceOf[ORSet[Any]] - (host, element))
-    case ThriftClearOpType ⇒
+    case ClearOpType ⇒
       (dataType: DataType) ⇒ dataType.asInstanceOf[ORSet[Any]].clear
   }
 
