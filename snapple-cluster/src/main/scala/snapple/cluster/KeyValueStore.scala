@@ -8,7 +8,7 @@ import java.util.concurrent.atomic.AtomicReference
 
 case class KeyValueStore() {
 
-  private val store: AtomicReference[Map[String, KeyValueEntry]] = new AtomicReference()
+  private val store: AtomicReference[Map[String, KeyValueEntry]] = new AtomicReference(Map.empty)
 
   def merge(other: Map[String, KeyValueEntry]): Unit = {
     val mergeFunction = (map: Map[String, KeyValueEntry]) ⇒ {
@@ -56,6 +56,10 @@ case class KeyValueStore() {
   def entry(key: String): Option[KeyValueEntry] = store.get.get(key)
 
   def entries: Map[String, KeyValueEntry] = store.get
+
+  def size: Int = entries.size
+
+  def isEmpty: Boolean = entries.isEmpty
 
   private def casHelper(func: Map[String, KeyValueEntry] ⇒ Option[Map[String, KeyValueEntry]]): Boolean = {
     var success = false

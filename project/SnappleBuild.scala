@@ -59,9 +59,9 @@ object SnappleBuild extends Build {
     dependencies = Seq(thrift)
   ).settings(clusterSettings: _*)
 
-  lazy val remote = Project(
-    id = "snapple-remote",
-    base = file("snapple-remote"),
+  lazy val client = Project(
+    id = "snapple-client",
+    base = file("snapple-client"),
     dependencies = Seq(thrift)
   )
 

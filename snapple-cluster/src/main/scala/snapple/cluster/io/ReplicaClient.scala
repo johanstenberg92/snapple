@@ -17,9 +17,7 @@ case class ReplicaClient(hostname: String, port: Int) {
 
   private val logger = Logger[this.type]
 
-  private var optionalClient: Option[SnappleService.AsyncClient] = None
-
-  private def client: SnappleService.AsyncClient = optionalClient.getOrElse {
+  private lazy val client: SnappleService.AsyncClient = {
     val protocolFactory = new TBinaryProtocol.Factory
     val clientManager = new TAsyncClientManager
     val transport = new TNonblockingSocket(hostname, port)
@@ -33,11 +31,11 @@ case class ReplicaClient(hostname: String, port: Int) {
 
   def ping: Future[Unit] = {
     val promise = Promise[Unit]()
-    client.ping(PingMethodCallback(promise))
+    client.ping(PingCallback(promise))
     promise.future
   }
 
-  private case class PingMethodCallback(promise: Promise[Unit]) extends AsyncMethodCallback[SnappleService.AsyncClient.ping_call] {
+  private case class PingCallback(promise: Promise[Unit]) extends AsyncMethodCallback[SnappleService.AsyncClient.ping_call] {
 
     override def onComplete(result: SnappleService.AsyncClient.ping_call): Unit = {
       logger.info(s"successfully pinged $hostname:$port")
