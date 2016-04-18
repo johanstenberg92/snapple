@@ -1,85 +1,71 @@
 package snapple.cluster.io
 
-import snapple.thrift.io._
+import snapple.finagle.io.{SnappleService, TDataType}
 
-import snapple.thrift.serialization.DataSerializer
+import snapple.finagle.io._
+
+import snapple.finagle.serialization.DataSerializer
 
 import snapple.cluster.{SnappleServer, KeyValueStore}
 
 import grizzled.slf4j.Logger
 
-import org.apache.thrift.server.TNonblockingServer
-import org.apache.thrift.transport.TNonblockingServerSocket
+import com.twitter.finagle.Thrift
 
-import java.util.{Map ⇒ JMap}
-import java.util.concurrent.{ExecutorService, Executors}
+import com.twitter.util.Future
 
 import java.nio.ByteBuffer
 
-case class ReplicaServer(keyValueStore: KeyValueStore, port: Int, replicaIdentifier: String) {
+case class ReplicaServer(store: KeyValueStore, port: Int, replicaIdentifier: String) {
 
   private val logger = Logger[this.type]
 
-  private val handler = SnappleServiceHandler(keyValueStore)
+  private val opHandler: OpHandler = OpHandler(replicaIdentifier)
 
-  private val processor = new SnappleService.Processor(handler)
+  private val server = Thrift.serveIface(s"localhost:$port", SnappleServiceHandler(store))
 
-  private val thriftOpHandler: ThriftOpHandler = ThriftOpHandler(replicaIdentifier)
+  private case class SnappleServiceHandler(store: KeyValueStore) extends SnappleService[Future] {
 
-  private val (server, executor): (TNonblockingServer, ExecutorService) = {
-    val serverTransport = new TNonblockingServerSocket(port)
-    val server = new TNonblockingServer(new TNonblockingServer.Args(serverTransport).processor(processor))
+    override def ping(): Future[Unit] = Future {
+      logger.info("replica server received ping")
+    }
 
-    val runnable = new Runnable { override def run(): Unit = server.serve }
-    val executor = Executors.newSingleThreadExecutor
-    executor.submit(runnable)
+    override def propagate(values: Map[String, TDataType] = Map[String, TDataType]()): Future[Unit] = Future {
+      val deserialized = FinagleMethodHelper.parsePropagate(values)
+      store.merge(deserialized)
+    }
 
-    logger.info(s"started replica server on port $port")
+    override def createEntry(key: String, dataKind: String, elementKind: Int): Future[Boolean] = Future {
+      store.entry(key) match {
+        case None =>
+          val entry = FinagleMethodHelper.parseCreateEntry(dataKind, elementKind)
+          store.createEntry(key, entry)
+        case _ => false
+      }
+    }
 
-    (server, executor)
+    override def removeEntry(key: String): Future[Boolean] = Future {
+      store.removeEntry(key)
+    }
+
+    override def getEntry(key: String): Future[TOptionalDataType] = Future {
+      FinagleMethodHelper.convertGetEntry(store.entry(key))
+    }
+
+    override def modifyEntry(key: String, operation: String, element: ByteBuffer): Future[Boolean] = Future {
+      store.entry(key) match {
+        case Some(kve) =>
+          val op = opHandler.handleOp(kve.dataKind, kve.elementKind, OpKind(operation), element)
+          kve.modify(op)
+          true
+        case None => false
+      }
+    }
+
   }
 
   def shutdown: Unit = {
     logger.info("shutting down replica server")
-    server.stop
-    executor.shutdown
-  }
-
-  private case class SnappleServiceHandler(keyValueStore: KeyValueStore) extends SnappleService.Iface {
-
-    private val logger = Logger[this.type]
-
-    override def ping(): Unit = {
-      logger.info("replica server received ping")
-    }
-
-    override def propagate(values: JMap[String, TDataType]): Unit = {
-      logger.info(s"received propagation")
-
-      val deserialized = ThriftMethodHelper.parsePropagate(values)
-
-      keyValueStore.merge(deserialized)
-    }
-
-    override def createEntry(key: String, dataType: String, elementType: Int): Boolean = keyValueStore.entry(key) match {
-      case None =>
-        val keyValueEntry = ThriftMethodHelper.parseCreateEntry(dataType, elementType)
-        keyValueStore.createEntry(key, keyValueEntry)
-      case _ => false
-    }
-
-
-    override def removeEntry(key: String): Boolean = keyValueStore.removeEntry(key)
-
-    override def getEntry(key: String): TOptionalDataType = ThriftMethodHelper.convertGetEntry(keyValueStore.entry(key))
-
-    override def modifyEntry(key: String, operation: String, element: ByteBuffer): Boolean = keyValueStore.entry(key) match {
-      case Some(kve) =>
-        val op = thriftOpHandler.handleOp(kve.thriftDataType, kve.elementType, ThriftOpType(operation), element)
-        kve.modify(op)
-        true
-      case None => false
-    }
-
+    server.close()
   }
 }

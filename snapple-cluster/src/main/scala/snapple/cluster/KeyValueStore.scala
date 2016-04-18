@@ -2,7 +2,7 @@ package snapple.cluster
 
 import snapple.crdts.datatypes.{DataType, ORSet, VersionVector}
 
-import snapple.thrift.io.ThriftElementType
+import snapple.finagle.io.ElementKind
 
 import java.util.concurrent.atomic.AtomicReference
 

@@ -29,18 +29,18 @@ object SnappleBuild extends Build {
     base = file("snapple-crdts")
   )
 
-  lazy val thriftSettings = Seq(
+  lazy val finagleSettings = Seq(
     libraryDependencies ++= Seq(
       Dependencies.grizzledLogging,
-      Dependencies.thrift
+      Dependencies.finagleThrift
     )
   )
 
-  lazy val thrift = Project(
-    id = "snapple-thrift",
-    base = file("snapple-thrift"),
+  lazy val finagle = Project(
+    id = "snapple-finagle",
+    base = file("snapple-finagle"),
     dependencies = Seq(crdts),
-    settings = thriftSettings
+    settings = finagleSettings
   )
 
   lazy val clusterSettings = Seq(
@@ -53,14 +53,14 @@ object SnappleBuild extends Build {
   lazy val cluster = Project(
     id = "snapple-cluster",
     base = file("snapple-cluster"),
-    dependencies = Seq(thrift),
+    dependencies = Seq(finagle),
     settings = clusterSettings
   )
 
   lazy val client = Project(
     id = "snapple-client",
     base = file("snapple-client"),
-    dependencies = Seq(thrift)
+    dependencies = Seq(finagle)
   )
 
   lazy val ioTestsSettings = Seq(

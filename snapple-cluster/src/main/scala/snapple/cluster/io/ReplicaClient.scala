@@ -1,23 +1,24 @@
 package snapple.cluster.io
 
-import snapple.thrift.io.{SnappleService, TDataType}
+import snapple.finagle.io.{SnappleService, TDataType}
 
 import grizzled.slf4j.Logger
 
-import org.apache.thrift.TException
-import org.apache.thrift.transport.TNonblockingSocket
-import org.apache.thrift.protocol.TBinaryProtocol
-import org.apache.thrift.async.{TAsyncClientManager, AsyncMethodCallback}
+import com.twitter.finagle.Thrift
 
-import scala.collection.JavaConverters._
-
-import scala.concurrent.{Future, Promise}
+import com.twitter.util.Future
 
 case class ReplicaClient(hostname: String, port: Int) {
 
   private val logger = Logger[this.type]
 
-  private val protocolFactory = new TBinaryProtocol.Factory
+  private val client = Thrift.newIface[SnappleService[Future]](s"$hostname:$port")
+
+  def shutdown: Unit = client.close
+
+  def ping: Future[Unit] = client.ping
+
+  /*private val protocolFactory = new TBinaryProtocol.Factory
 
   private val clientManager = new TAsyncClientManager
 
@@ -66,6 +67,6 @@ case class ReplicaClient(hostname: String, port: Int) {
       logger.error(s"error propagating to $hostname:$port", error)
       promise.failure(error)
     }
-  }
+  }*/
 
 }
