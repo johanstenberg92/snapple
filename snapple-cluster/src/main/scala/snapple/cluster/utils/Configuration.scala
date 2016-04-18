@@ -7,5 +7,6 @@ case class Configuration(
   port: Int = ArgParser.DefaultPort,
   replicaIdentifier: String = UUID.randomUUID.toString,
   replicaAddresses: Seq[(String, Int)] = Seq.empty,
-  propagationInterval: Int = ArgParser.DefaultPropagationInterval
+  propagationInterval: Int = ArgParser.DefaultPropagationInterval,
+  initialPropagationDelay: Int = ArgParser.DefaultInitialPropagationDelay
 )

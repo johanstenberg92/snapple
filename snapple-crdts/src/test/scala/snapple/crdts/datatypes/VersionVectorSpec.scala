@@ -1,4 +1,4 @@
-package snapple.crdts.datatypes
+hackage snapple.crdts.datatypes
 
 import org.scalatest.{WordSpecLike, Matchers}
 

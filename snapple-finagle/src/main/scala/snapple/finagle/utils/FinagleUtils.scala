@@ -1,4 +1,4 @@
-package snapple.finagle
+package snapple.finagle.utils
 
 import com.twitter.util.{Future => TwitterFuture, Throw, Return}
 

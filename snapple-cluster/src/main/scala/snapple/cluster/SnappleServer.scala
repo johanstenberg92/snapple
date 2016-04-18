@@ -15,24 +15,24 @@ object SnappleServer {
 
 case class SnappleServer(config: Configuration) {
 
-  private val store = KeyValueStore()
+  val store = KeyValueStore()
 
-  private val server = ReplicaServer(store, config.port, config.replicaIdentifier)
+  val server = ReplicaServer(store, config.port, config.replicaIdentifier)
 
-  private val propagator = {
-    val host = config.replicaIdentifier
+  val propagator = {
+    val id = config.replicaIdentifier
 
     var orset = ORSet()
 
     config.replicaAddresses.foreach {
-      case (hostname, port) => orset = orset + (host, s"$hostname:$port")
+      case (hostname, port) => orset = orset + (id, s"$hostname:$port")
     }
 
-    orset = orset + (host, s"${config.host}:${config.port}")
+    orset = orset + (id, s"${config.host}:${config.port}")
 
     store.createEntry(ReplicaPropagator.ReplicasKey, KeyValueEntry(orset, StringElementKind))
 
-    ReplicaPropagator(store, config.propagationInterval)
+    ReplicaPropagator(store, config)
   }
 
   def shutdown: Map[String, KeyValueEntry] = {

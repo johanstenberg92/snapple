@@ -41,4 +41,10 @@ class KeyValueEntry(dataType: DataType, val elementKind: ElementKind) {
     s"KeyValueEntry($d, $e)"
   }
 
+  override def equals(that: Any): Boolean = that match {
+    case KeyValueEntry(otherDataType, otherElementKind) =>
+      ((otherDataType, otherElementKind)) == get
+    case _ => false
+  }
+
 }

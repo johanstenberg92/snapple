@@ -8,6 +8,8 @@ object ArgParser {
 
   val DefaultPropagationInterval = 3
 
+  val DefaultInitialPropagationDelay = 5
+
   private val Version = "0.0.1"
 
   private val parser = new scopt.OptionParser[Configuration]("snapple") {
@@ -27,6 +29,9 @@ object ArgParser {
     opt[Int]('s', "propagation-interval") action { (x, c) =>
       c.copy(propagationInterval = x)
     } text(s"seconds between propagations, default: $DefaultPropagationInterval")
+    opt[Int]('d', "initial-propagation-delay") action { (x, c) =>
+      c.copy(initialPropagationDelay = x)
+    } text(s"seconds before first propagation, default: $DefaultInitialPropagationDelay")
   }
 
   def apply(args: Array[String]): Configuration = parser.parse(args, Configuration()) match {
