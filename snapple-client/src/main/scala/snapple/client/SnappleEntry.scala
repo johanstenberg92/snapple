@@ -2,13 +2,13 @@ package snapple.client
 
 import snapple.crdts.datatypes.{DataType, ORSet, VersionVector}
 
-import snapple.thrift.io._
+import snapple.finagle.io._
 
-case class SnappleEntry(dataType: DataType, elementType: ThriftElementType) {
+case class SnappleEntry(dataType: DataType, elementKind: ElementKind) {
 
-  lazy val thriftDataType: ThriftDataType = dataType match {
-    case v: VersionVector => VersionVectorDataType
-    case o: ORSet[_] => ORSetDataType
+  lazy val dataKind: DataKind = dataType match {
+    case v: VersionVector => VersionVectorDataKind
+    case o: ORSet[_] => ORSetDataKind
   }
 
   def asVersionVector: VersionVector = dataType.asInstanceOf[VersionVector]

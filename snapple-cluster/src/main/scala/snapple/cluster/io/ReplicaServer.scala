@@ -14,6 +14,8 @@ import com.twitter.finagle.Thrift
 
 import com.twitter.util.Future
 
+import scala.collection.{Map => SMap}
+
 import java.nio.ByteBuffer
 
 case class ReplicaServer(store: KeyValueStore, port: Int, replicaIdentifier: String) {
@@ -30,7 +32,7 @@ case class ReplicaServer(store: KeyValueStore, port: Int, replicaIdentifier: Str
       logger.info("replica server received ping")
     }
 
-    override def propagate(values: Map[String, TDataType] = Map[String, TDataType]()): Future[Unit] = Future {
+    override def propagate(values: SMap[String, TDataType] = Map[String, TDataType]()): Future[Unit] = Future {
       val deserialized = FinagleMethodHelper.parsePropagate(values)
       store.merge(deserialized)
     }

@@ -4,9 +4,10 @@ import snapple.cluster.SnappleServer
 
 import snapple.cluster.utils.Configuration
 
-import snapple.thrift.io._
+import snapple.finagle.io._
 
 import snapple.client.io.SnappleClient
+
 
 import org.scalatest.{WordSpecLike, Matchers, BeforeAndAfterAll}
 
@@ -47,7 +48,7 @@ class SnappleClientIOSpec extends WordSpecLike with Matchers with ScalaFutures w
 
       val key = UUID.randomUUID.toString
 
-      client.createEntry(key, VersionVectorDataType, NoElementType).futureValue should be (true)
+      client.createEntry(key, VersionVectorDataKind, NoElementKind).futureValue should be (true)
 
       val vv = client.entry(key).futureValue.getOrElse(fail).asVersionVector
 
@@ -61,11 +62,11 @@ class SnappleClientIOSpec extends WordSpecLike with Matchers with ScalaFutures w
 
       val key = UUID.randomUUID.toString
 
-      client.createEntry(key, ORSetDataType, LongElementType).futureValue should be (true)
+      client.createEntry(key, ORSetDataKind, LongElementKind).futureValue should be (true)
 
       val element = 1337L
 
-      client.modifyEntry(key, AddOpType, Some(element)).futureValue should be (true)
+      client.modifyEntry(key, AddOpKind, Some(element)).futureValue should be (true)
 
       val orset = client.entry(key).futureValue.getOrElse(fail).asORSet
 
@@ -80,7 +81,7 @@ class SnappleClientIOSpec extends WordSpecLike with Matchers with ScalaFutures w
       val key = UUID.randomUUID.toString
 
       client.entry(key).futureValue.isEmpty should be (true)
-      client.modifyEntry(key, AddOpType, Some(1337L)).futureValue should be (false)
+      client.modifyEntry(key, AddOpKind, Some(1337L)).futureValue should be (false)
 
       client.disconnect
     }
@@ -90,7 +91,7 @@ class SnappleClientIOSpec extends WordSpecLike with Matchers with ScalaFutures w
 
       val key = UUID.randomUUID.toString
 
-      client.createEntry(key, VersionVectorDataType, NoElementType).futureValue should be (true)
+      client.createEntry(key, VersionVectorDataKind, NoElementKind).futureValue should be (true)
       client.removeEntry(key).futureValue should be (true)
       client.removeEntry(key).futureValue should be (false)
 
@@ -104,7 +105,7 @@ class SnappleClientIOSpec extends WordSpecLike with Matchers with ScalaFutures w
 
       val key = UUID.randomUUID.toString
 
-      client.createEntry(key, VersionVectorDataType, NoElementType).futureValue should be (true)
+      client.createEntry(key, VersionVectorDataKind, NoElementKind).futureValue should be (true)
 
       client.disconnect
 
@@ -122,11 +123,11 @@ class SnappleClientIOSpec extends WordSpecLike with Matchers with ScalaFutures w
 
       val key = UUID.randomUUID.toString
 
-      client.createEntry(key, ORSetDataType, StringElementType).futureValue should be (true)
+      client.createEntry(key, ORSetDataKind, StringElementKind).futureValue should be (true)
 
       val element = "Yo Whats UPP"
 
-      client.modifyEntry(key, AddOpType, Some(element)).futureValue should be (true)
+      client.modifyEntry(key, AddOpKind, Some(element)).futureValue should be (true)
 
       val orset = client.entry(key).futureValue.getOrElse(fail).asORSet
 
@@ -142,8 +143,8 @@ class SnappleClientIOSpec extends WordSpecLike with Matchers with ScalaFutures w
       val k1 = UUID.randomUUID.toString
       val k2 = UUID.randomUUID.toString
 
-      val f1 = c1.createEntry(k1, ORSetDataType, StringElementType)
-      val f2 = c2.createEntry(k2, ORSetDataType, StringElementType)
+      val f1 = c1.createEntry(k1, ORSetDataKind, StringElementKind)
+      val f2 = c2.createEntry(k2, ORSetDataKind, StringElementKind)
 
       f1.futureValue should be (true)
       f2.futureValue should be (true)
@@ -153,7 +154,7 @@ class SnappleClientIOSpec extends WordSpecLike with Matchers with ScalaFutures w
     }
 
     "be able to call multiple methods simultaneously with client" in {
-      val size = 2
+      val size = 50
       val client = SnappleClient(host)
 
       val future = Future.sequence((0 until size).toSeq.map(_ => client.ping))

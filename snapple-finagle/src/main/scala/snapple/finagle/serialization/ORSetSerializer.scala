@@ -17,7 +17,7 @@ private[serialization] object ORSetSerializer {
   }
 
   def deserialize(torset: TORSet): (ORSet[Any], ElementKind) = {
-    val elementKind = ElementKind(torset.elementType)
+    val elementKind = ElementKind(torset.elementKind)
 
     val elementsMap = torset.elements.map {
       case (k, v) => (DataSerializer.deserializeElement(k, elementKind) -> VersionVectorSerializer.deserialize(v))

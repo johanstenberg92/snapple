@@ -1,6 +1,6 @@
 package snapple.cluster.io
 
-import snapple.thrift.serialization.DataSerializer
+import snapple.finagle.serialization.DataSerializer
 
 import snapple.cluster.{KeyValueStore, KeyValueEntry}
 
@@ -48,7 +48,7 @@ case class ReplicaPropagator(private val store: KeyValueStore, private val initi
           client.propagate(serialized).onFailure {
             case error ⇒
               logger.info(s"connection to ${client.hostname}:${client.port} failed with exception", error)
-              client.shutdown
+              client.disconnect
               clients = clients - client
           }
       }
@@ -61,7 +61,7 @@ case class ReplicaPropagator(private val store: KeyValueStore, private val initi
 
   def shutdown: Unit = {
     scheduledFuture.cancel(false)
-    clients.foreach(_.shutdown)
+    clients.foreach(_.disconnect)
   }
 
 }

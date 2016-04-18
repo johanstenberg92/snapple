@@ -65,7 +65,8 @@ object SnappleBuild extends Build {
 
   lazy val ioTestsSettings = Seq(
     libraryDependencies ++= Seq(
-      Dependencies.logbackLogging % "test"
+      Dependencies.logbackLogging % "test",
+      Dependencies.finagleThrift % "test"
     ),
 
     parallelExecution in Test := false

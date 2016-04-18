@@ -4,19 +4,20 @@ import snapple.client.SnappleEntry
 
 import snapple.crdts.datatypes.DataType
 
-import snapple.thrift.io._
-import snapple.thrift.serialization.DataSerializer
+import snapple.finagle.FinagleUtils._
+import snapple.finagle.io._
+import snapple.finagle.serialization.DataSerializer
 
 import grizzled.slf4j.Logger
 
-import org.apache.thrift.TException
-import org.apache.thrift.transport.TNonblockingSocket
-import org.apache.thrift.protocol.TBinaryProtocol
-import org.apache.thrift.async.{TAsyncClientManager, AsyncMethodCallback}
-
-import scala.concurrent.{Future, Promise}
-
 import java.nio.ByteBuffer
+
+import com.twitter.finagle.{Thrift, ServiceFactory}
+import com.twitter.finagle.thrift.ThriftClientRequest
+
+import com.twitter.util.{Future => TwitterFuture}
+
+import scala.concurrent.Future
 
 object SnappleClient {
 
@@ -28,116 +29,39 @@ case class SnappleClient(hostname: String, port: Int = SnappleClient.DefaultPort
 
   private val logger = Logger[this.type]
 
-  private val protocolFactory = new TBinaryProtocol.Factory
-  private val clientManager = new TAsyncClientManager
-  private val socket = new TNonblockingSocket(hostname, port)
+  private val serviceFactory: ServiceFactory[ThriftClientRequest, Array[Byte]] = Thrift.newClient(s"$hostname:$port")
+
+  private val client: SnappleService[TwitterFuture] = new SnappleService.FinagledClient(serviceFactory.toService)
 
   logger.info(s"connected snapple client to $hostname:$port")
 
-  private def client: SnappleService.AsyncClient = new SnappleService.AsyncClient(protocolFactory, clientManager, socket)
-
-  def disconnect: Unit = socket.close
-
-  def ping: Future[Unit] = {
-    val promise = Promise[Unit]()
-    client.ping(PingCallback(promise))
-    promise.future
+  def disconnect: Unit = {
+    logger.info(s"shutdown connection to $hostname:$port")
+    serviceFactory.close
   }
 
-  private case class PingCallback(promise: Promise[Unit]) extends AsyncMethodCallback[SnappleService.AsyncClient.ping_call] {
+  def ping: Future[Unit] = toScalaFuture(client.ping)
 
-    override def onComplete(result: SnappleService.AsyncClient.ping_call): Unit = {
-      println("pong")
-      logger.info(s"successfully pinged $hostname:$port")
-      promise.success(Unit)
-    }
+  def createEntry(key: String, dataKind: DataKind, elementKind: ElementKind): Future[Boolean] =
+    toScalaFuture(client.createEntry(key, dataKind.id, elementKind.id))
 
-    override def onError(error: Exception): Unit = {
-      println(error)
-      logger.error(s"error pinging $hostname:$port", error)
-      promise.failure(error)
-    }
-
-  }
-
-  def createEntry(key: String, dataType: ThriftDataType, elementType: ThriftElementType): Future[Boolean] = {
-    val promise = Promise[Boolean]()
-    client.createEntry(key, dataType.id, elementType.id, CreateEntryCallback(promise))
-    promise.future
-  }
-
-  private case class CreateEntryCallback(promise: Promise[Boolean]) extends AsyncMethodCallback[SnappleService.AsyncClient.createEntry_call] {
-
-    override def onComplete(result: SnappleService.AsyncClient.createEntry_call): Unit = {
-      promise.success(result.getResult)
-    }
-
-    override def onError(error: Exception): Unit = {
-      promise.failure(error)
-    }
-
-  }
-
-  def removeEntry(key: String): Future[Boolean] = {
-    val promise = Promise[Boolean]()
-    client.removeEntry(key, RemoveEntryCallback(promise))
-    promise.future
-  }
-
-  private case class RemoveEntryCallback(promise: Promise[Boolean]) extends AsyncMethodCallback[SnappleService.AsyncClient.removeEntry_call] {
-
-    override def onComplete(result: SnappleService.AsyncClient.removeEntry_call): Unit = {
-      promise.success(result.getResult)
-    }
-
-    override def onError(error: Exception): Unit = {
-      promise.failure(error)
-    }
-
-  }
+  def removeEntry(key: String): Future[Boolean] = toScalaFuture(client.removeEntry(key))
 
   def entry(key: String): Future[Option[SnappleEntry]] = {
-    val promise = Promise[Option[SnappleEntry]]()
-    client.getEntry(key, GetEntryCallback(promise))
-    promise.future
-  }
-
-  private case class GetEntryCallback(promise: Promise[Option[SnappleEntry]]) extends AsyncMethodCallback[SnappleService.AsyncClient.getEntry_call] {
-
-    override def onComplete(result: SnappleService.AsyncClient.getEntry_call): Unit = {
-      val optionalDataType = result.getResult
-
-      if (optionalDataType.isSetDataType) {
-        val tDataType = optionalDataType.getDataType
-        val (dataType, elementType) = DataSerializer.deserialize(optionalDataType.getDataType)
-        promise.success(Some(SnappleEntry(dataType, elementType)))
-      } else promise.success(None)
+    val twitterFuture = client.getEntry(key).map {
+      case TOptionalDataType(Some(v)) =>
+        val (dataType, elementKind) = DataSerializer.deserialize(v)
+        Some(SnappleEntry(dataType, elementKind))
+      case _ => None
     }
 
-    override def onError(error: Exception): Unit = {
-      promise.failure(error)
-    }
-
+    toScalaFuture(twitterFuture)
   }
 
-  def modifyEntry(key: String, operation: ThriftOpType, value: Option[Any] = None): Future[Boolean] = {
-    val promise = Promise[Boolean]()
+  def modifyEntry(key: String, operation: OpKind, value: Option[Any] = None): Future[Boolean] = {
+    val bb = value.map(DataSerializer.serializeElement).getOrElse(ByteBuffer.allocate(0))
 
-    val bb = value.map(DataSerializer.serializeElementType).getOrElse(ByteBuffer.allocate(0))
-
-    client.modifyEntry(key, operation.id, bb, ModifyEntryCallback(promise))
-    promise.future
+    toScalaFuture(client.modifyEntry(key, operation.id, bb))
   }
 
-  private case class ModifyEntryCallback(promise: Promise[Boolean]) extends AsyncMethodCallback[SnappleService.AsyncClient.modifyEntry_call] {
-
-    override def onComplete(result: SnappleService.AsyncClient.modifyEntry_call): Unit = {
-      promise.success(result.getResult)
-    }
-
-    override def onError(error: Exception): Unit = {
-      promise.failure(error)
-    }
-
-  }
 }

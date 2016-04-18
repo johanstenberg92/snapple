@@ -2,7 +2,7 @@ package snapple.cluster
 
 import snapple.crdts.datatypes.{VersionVector, DataType, ORSet}
 
-import snapple.thrift.io._
+import snapple.finagle.io._
 
 import org.scalatest.{WordSpecLike, Matchers}
 
@@ -18,7 +18,7 @@ class KeyValueEntrySpec extends WordSpecLike with Matchers with ScalaFutures {
     "be correctly modified" in {
       val host = "<host>"
 
-      val entry = KeyValueEntry(VersionVector(), NoElementType)
+      val entry = KeyValueEntry(VersionVector(), NoElementKind)
 
       val op = (d: DataType) => d.asInstanceOf[VersionVector] + host
 
@@ -34,7 +34,7 @@ class KeyValueEntrySpec extends WordSpecLike with Matchers with ScalaFutures {
 
     "be correctly modified concurrently" in {
       val size = 1000
-      val entry = KeyValueEntry(VersionVector(), NoElementType)
+      val entry = KeyValueEntry(VersionVector(), NoElementKind)
 
       val ops = Array.ofDim[(DataType => DataType)](size)
 
@@ -55,9 +55,9 @@ class KeyValueEntrySpec extends WordSpecLike with Matchers with ScalaFutures {
       }
     }
 
-    "have correct thrift data type" in {
-      KeyValueEntry(VersionVector(), NoElementType).thriftDataType should be (VersionVectorDataType)
-      KeyValueEntry(ORSet(), LongElementType).thriftDataType should be (ORSetDataType)
+    "have correct data kind" in {
+      KeyValueEntry(VersionVector(), NoElementKind).dataKind should be (VersionVectorDataKind)
+      KeyValueEntry(ORSet(), LongElementKind).dataKind should be (ORSetDataKind)
     }
 
   }

@@ -8,13 +8,15 @@ import snapple.finagle.io._
 
 import snapple.finagle.serialization.DataSerializer
 
+import scala.collection.{Map => SMap}
+
 object FinagleMethodHelper {
 
-  def parsePropagate(values: Map[String, TDataType]): Map[String, KeyValueEntry] = values.map {
+  def parsePropagate(values: SMap[String, TDataType]): Map[String, KeyValueEntry] = values.map {
     case (k, v) =>
       val (dataType, elementKind) = DataSerializer.deserialize(v)
       (k -> KeyValueEntry(dataType, elementKind))
-  }
+  }.toMap
 
   def parseCreateEntry(dataKind: String, elementKind: Int): KeyValueEntry = DataKind(dataKind) match {
     case ORSetDataKind         ⇒ parseCreateORSetEntry(elementKind)

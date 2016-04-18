@@ -2,7 +2,7 @@ package snapple.cluster
 
 import snapple.crdts.datatypes.{VersionVector, DataType, ORSet}
 
-import snapple.thrift.io.{NoElementType, StringElementType}
+import snapple.finagle.io.{NoElementKind, StringElementKind}
 
 import org.scalatest.{WordSpecLike, Matchers}
 
@@ -32,17 +32,17 @@ class KeyValueStoreSpec extends WordSpecLike with Matchers with ScalaFutures {
       val otherLonerKey = "<otherlonerkey>"
 
       val other = Map(
-        orsetKey -> KeyValueEntry(orset1, StringElementType),
-        vvKey -> KeyValueEntry(vv1, NoElementType),
-        otherLonerKey -> KeyValueEntry(orset1, StringElementType)
+        orsetKey -> KeyValueEntry(orset1, StringElementKind),
+        vvKey -> KeyValueEntry(vv1, NoElementKind),
+        otherLonerKey -> KeyValueEntry(orset1, StringElementKind)
       )
 
       val thisLonerKey = "<thislonerkey>"
 
       val store = KeyValueStore()
-      store.createEntry(orsetKey, KeyValueEntry(orset2, StringElementType))
-      store.createEntry(vvKey, KeyValueEntry(vv2, NoElementType))
-      store.createEntry(thisLonerKey, KeyValueEntry(orset2, StringElementType))
+      store.createEntry(orsetKey, KeyValueEntry(orset2, StringElementKind))
+      store.createEntry(vvKey, KeyValueEntry(vv2, NoElementKind))
+      store.createEntry(thisLonerKey, KeyValueEntry(orset2, StringElementKind))
 
       store.merge(other)
 
@@ -50,35 +50,35 @@ class KeyValueStoreSpec extends WordSpecLike with Matchers with ScalaFutures {
         case None => fail
         case Some(KeyValueEntry(d, e)) =>
           d should be (orset1.merge(orset2))
-          e should be (StringElementType)
+          e should be (StringElementKind)
       }
 
       store.entry(vvKey) match {
         case None => fail
         case Some(KeyValueEntry(d, e)) =>
           d should be (vv1.merge(vv2))
-          e should be (NoElementType)
+          e should be (NoElementKind)
       }
 
       store.entry(otherLonerKey) match {
         case None => fail
         case Some(KeyValueEntry(d, e)) =>
           d should be (orset1)
-          e should be (StringElementType)
+          e should be (StringElementKind)
       }
 
       store.entry(thisLonerKey) match {
         case None => fail
         case Some(KeyValueEntry(d, e)) =>
           d should be (orset2)
-          e should be (StringElementType)
+          e should be (StringElementKind)
       }
     }
 
     "correctly create entry" in {
       val key = "<key>"
       val store = KeyValueStore()
-      val entry = KeyValueEntry(VersionVector(), NoElementType)
+      val entry = KeyValueEntry(VersionVector(), NoElementKind)
 
       store.createEntry(key, entry) should be (true)
 
@@ -91,7 +91,7 @@ class KeyValueStoreSpec extends WordSpecLike with Matchers with ScalaFutures {
       val size = 1000
       val store = KeyValueStore()
 
-      val v = KeyValueEntry(VersionVector(), NoElementType)
+      val v = KeyValueEntry(VersionVector(), NoElementKind)
       val entries = Array.fill(size)(v).toSeq
 
       val future = Future.sequence(entries.zipWithIndex.map {
@@ -110,7 +110,7 @@ class KeyValueStoreSpec extends WordSpecLike with Matchers with ScalaFutures {
     "correctly remove entry" in {
       val key = "<key>"
       val store = KeyValueStore()
-      val entry = KeyValueEntry(VersionVector(), NoElementType)
+      val entry = KeyValueEntry(VersionVector(), NoElementKind)
 
       store.createEntry(key, entry) should be (true)
       store.removeEntry(key) should be (true)
@@ -123,7 +123,7 @@ class KeyValueStoreSpec extends WordSpecLike with Matchers with ScalaFutures {
     "correctly read entry" in {
       val key = "<key>"
       val store = KeyValueStore()
-      val entry = KeyValueEntry(VersionVector(), NoElementType)
+      val entry = KeyValueEntry(VersionVector(), NoElementKind)
 
       store.createEntry(key, entry) should be (true)
 
@@ -135,7 +135,7 @@ class KeyValueStoreSpec extends WordSpecLike with Matchers with ScalaFutures {
       val k2 = "<key2>"
 
       val store = KeyValueStore()
-      val entry = KeyValueEntry(VersionVector(), NoElementType)
+      val entry = KeyValueEntry(VersionVector(), NoElementKind)
 
       store.createEntry(k1, entry) should be (true)
       store.createEntry(k2, entry) should be (true)
