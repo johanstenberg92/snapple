@@ -23,20 +23,24 @@ object SnappleClient {
 
   val DefaultPort = 9000
 
+  def singleHost(hostname: String, port: Int = DefaultPort): SnappleClient = SnappleClient(Seq((hostname, port)))
+
 }
 
-case class SnappleClient(hostname: String, port: Int = SnappleClient.DefaultPort) {
+case class SnappleClient(hosts: Seq[(String, Int)]) {
 
   private val logger = Logger[this.type]
 
-  private val serviceFactory: ServiceFactory[ThriftClientRequest, Array[Byte]] = Thrift.newClient(s"$hostname:$port")
+  private val hostsString = hosts.foldLeft("") { case (acc, (h, p)) => s"$acc,$h:$p" }.drop(1)
+
+  private val serviceFactory: ServiceFactory[ThriftClientRequest, Array[Byte]] = Thrift.newClient(hostsString)
 
   private val client: SnappleService[TwitterFuture] = new SnappleService.FinagledClient(serviceFactory.toService)
 
-  logger.info(s"connected snapple client to $hostname:$port")
+  logger.info("connected snapple client")
 
   def disconnect: Unit = {
-    logger.info(s"shutdown connection to $hostname:$port")
+    logger.info("shutdown connection")
     serviceFactory.close
   }
 

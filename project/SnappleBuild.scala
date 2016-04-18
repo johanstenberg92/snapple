@@ -69,7 +69,8 @@ object SnappleBuild extends Build {
       Dependencies.finagleThrift % "test"
     ),
 
-    parallelExecution in Test := false
+    parallelExecution in Test := false,
+    fork := true
   )
 
   lazy val ioTests = Project(

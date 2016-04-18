@@ -20,7 +20,7 @@ case class SnappleServer(config: Configuration) {
       case (hostname, port) ⇒ ReplicaClient(hostname, port)
     }
 
-    ReplicaPropagator(store, initialClients)
+    ReplicaPropagator(store, initialClients, config.propagationInterval)
   }
 
   def shutdown: Map[String, KeyValueEntry] = {

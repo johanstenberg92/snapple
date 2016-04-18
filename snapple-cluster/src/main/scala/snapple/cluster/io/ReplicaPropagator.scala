@@ -10,15 +10,7 @@ import java.util.concurrent.{Executors, TimeUnit}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-object ReplicaPropagator {
-
-  private val SecondsBetweenPropagations = 3
-
-}
-
-case class ReplicaPropagator(private val store: KeyValueStore, private val initialClients: Seq[ReplicaClient]) {
-
-  import ReplicaPropagator._
+case class ReplicaPropagator(store: KeyValueStore, private val initialClients: Seq[ReplicaClient], propagationInterval: Int) {
 
   private val logger = Logger[this.type]
 
@@ -57,7 +49,7 @@ case class ReplicaPropagator(private val store: KeyValueStore, private val initi
   }
 
   private val scheduledFuture = propagationExecutor
-    .scheduleAtFixedRate(propagationRunnable, 0, SecondsBetweenPropagations, TimeUnit.SECONDS)
+    .scheduleAtFixedRate(propagationRunnable, 0, propagationInterval, TimeUnit.SECONDS)
 
   def shutdown: Unit = {
     scheduledFuture.cancel(false)

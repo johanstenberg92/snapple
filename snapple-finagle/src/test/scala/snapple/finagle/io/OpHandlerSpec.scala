@@ -24,7 +24,7 @@ class OpHandlerSpec extends WordSpecLike with Matchers {
       val vv = op(VersionVector()).asInstanceOf[VersionVector]
 
       vv.size should be (1)
-      vv.versionAt(host) should not be (-1)
+      vv.versionAt(host) should not be (0)
     }
 
     "handle or set add op" in {

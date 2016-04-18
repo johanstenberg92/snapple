@@ -29,7 +29,7 @@ class KeyValueEntrySpec extends WordSpecLike with Matchers with ScalaFutures {
       val vv = dataType.asInstanceOf[VersionVector]
 
       vv.size should be (1)
-      vv.versionAt(host) should not be (-1)
+      vv.versionAt(host) should not be (0)
     }
 
     "be correctly modified concurrently" in {
@@ -50,7 +50,7 @@ class KeyValueEntrySpec extends WordSpecLike with Matchers with ScalaFutures {
         vv.size should be (size)
 
         for (i <- 0 until size) {
-          vv.versionAt(i.toString) should not be (-1)
+          vv.versionAt(i.toString) should not be (0)
         }
       }
     }

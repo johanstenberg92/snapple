@@ -29,7 +29,7 @@ case class ReplicaServer(store: KeyValueStore, port: Int, replicaIdentifier: Str
   private case class SnappleServiceHandler(store: KeyValueStore) extends SnappleService[Future] {
 
     override def ping(): Future[Unit] = Future {
-      logger.info("replica server received ping")
+      logger.info(s"replica server on port $port received ping")
     }
 
     override def propagate(values: SMap[String, TDataType] = Map[String, TDataType]()): Future[Unit] = Future {
