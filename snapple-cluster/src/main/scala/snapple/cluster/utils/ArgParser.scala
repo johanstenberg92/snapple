@@ -2,6 +2,8 @@ package snapple.cluster.utils
 
 object ArgParser {
 
+  val DefaultHost = "localhost"
+
   val DefaultPort = 9000
 
   val DefaultPropagationInterval = 3
@@ -10,6 +12,9 @@ object ArgParser {
 
   private val parser = new scopt.OptionParser[Configuration]("snapple") {
     head("snapple", Version)
+    opt[String]('h', "host") action { (x, c) =>
+      c.copy(host = x)
+    } text(s"the host the snapple instance will run on, default: $DefaultHost.")
     opt[Int]('p', "port") action { (x, c) =>
       c.copy(port = x)
     } text(s"the port the snapple instance will run on, default: $DefaultPort.")

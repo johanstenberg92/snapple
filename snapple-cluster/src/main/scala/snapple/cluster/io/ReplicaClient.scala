@@ -9,16 +9,16 @@ import com.twitter.finagle.thrift.ThriftClientRequest
 
 import com.twitter.util.Future
 
-case class ReplicaClient(hostname: String, port: Int) {
+case class ReplicaClient(address: String) {
 
   private val logger = Logger[this.type]
 
-  private val serviceFactory: ServiceFactory[ThriftClientRequest, Array[Byte]] = Thrift.newClient(s"$hostname:$port")
+  private val serviceFactory: ServiceFactory[ThriftClientRequest, Array[Byte]] = Thrift.newClient(address)
 
   private val client: SnappleService[Future] = new SnappleService.FinagledClient(serviceFactory.toService)
 
   def disconnect: Unit = {
-    logger.info(s"shutdown connection to $hostname:$port")
+    logger.info(s"shutdown connection to $address")
     serviceFactory.close
   }
 

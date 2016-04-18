@@ -1,5 +1,9 @@
 package snapple.cluster
 
+import snapple.crdts.datatypes.ORSet
+
+import snapple.finagle.io.StringElementKind
+
 import snapple.cluster.io.{ReplicaServer, ReplicaClient, ReplicaPropagator}
 
 import snapple.cluster.utils.Configuration
@@ -16,11 +20,19 @@ case class SnappleServer(config: Configuration) {
   private val server = ReplicaServer(store, config.port, config.replicaIdentifier)
 
   private val propagator = {
-    val initialClients = config.replicaAddresses.map {
-      case (hostname, port) ⇒ ReplicaClient(hostname, port)
+    val host = config.replicaIdentifier
+
+    var orset = ORSet()
+
+    config.replicaAddresses.foreach {
+      case (hostname, port) => orset = orset + (host, s"$hostname:$port")
     }
 
-    ReplicaPropagator(store, initialClients, config.propagationInterval)
+    orset = orset + (host, s"${config.host}:${config.port}")
+
+    store.createEntry(ReplicaPropagator.ReplicasKey, KeyValueEntry(orset, StringElementKind))
+
+    ReplicaPropagator(store, config.propagationInterval)
   }
 
   def shutdown: Map[String, KeyValueEntry] = {

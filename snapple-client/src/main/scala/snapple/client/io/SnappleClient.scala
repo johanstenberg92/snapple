@@ -2,7 +2,7 @@ package snapple.client.io
 
 import snapple.client.SnappleEntry
 
-import snapple.crdts.datatypes.DataType
+import snapple.crdts.datatypes.{DataType, ORSet}
 
 import snapple.finagle.FinagleUtils._
 import snapple.finagle.io._
@@ -18,12 +18,17 @@ import com.twitter.finagle.thrift.ThriftClientRequest
 import com.twitter.util.{Future => TwitterFuture}
 
 import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
 
 object SnappleClient {
 
+  val ReplicasKey = "SNAPPLE_INTERNAL_REPLICA_CLIENTS"
+
+  val DefaultHost = "localhost"
+
   val DefaultPort = 9000
 
-  def singleHost(hostname: String, port: Int = DefaultPort): SnappleClient = SnappleClient(Seq((hostname, port)))
+  def singleHost(host: String = DefaultHost, port: Int = DefaultPort): SnappleClient = SnappleClient(Seq((host, port)))
 
 }
 
@@ -67,5 +72,8 @@ case class SnappleClient(hosts: Seq[(String, Int)]) {
 
     toScalaFuture(client.modifyEntry(key, operation.id, bb))
   }
+
+  def getHosts: Future[Set[String]] = entry(SnappleClient.ReplicasKey)
+    .map(_.map(_.dataType.asInstanceOf[ORSet[String]].elements).getOrElse(Set.empty))
 
 }

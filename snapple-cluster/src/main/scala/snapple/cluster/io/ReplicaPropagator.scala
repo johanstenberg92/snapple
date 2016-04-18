@@ -1,5 +1,7 @@
 package snapple.cluster.io
 
+import snapple.crdts.datatypes.ORSet
+
 import snapple.finagle.serialization.DataSerializer
 
 import snapple.cluster.{KeyValueStore, KeyValueEntry}
@@ -10,21 +12,16 @@ import java.util.concurrent.{Executors, TimeUnit}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-case class ReplicaPropagator(store: KeyValueStore, private val initialClients: Seq[ReplicaClient], propagationInterval: Int) {
+object ReplicaPropagator {
+
+  val ReplicasKey = "SNAPPLE_INTERNAL_REPLICA_CLIENTS"
+}
+
+case class ReplicaPropagator(store: KeyValueStore, propagationInterval: Int) {
 
   private val logger = Logger[this.type]
 
-  @volatile private var clients: Set[ReplicaClient] = initialClients.toSet
-
-  def addClient(client: ReplicaClient): Unit = {
-    clients = clients + client
-  }
-
-  def removeClient(clientHostname: String, clientPort: Int): Unit = {
-    clients = clients.filterNot {
-      case ReplicaClient(hostname, port) ⇒ hostname == clientHostname && port == clientPort
-    }
-  }
+  @volatile private var clientConnections: Map[String, ReplicaClient] = Map.empty
 
   private val propagationExecutor = Executors.newSingleThreadScheduledExecutor
 
@@ -35,13 +32,29 @@ case class ReplicaPropagator(store: KeyValueStore, private val initialClients: S
         case (k, KeyValueEntry(dataType, elementType)) ⇒ (k → DataSerializer.serialize(dataType, elementType))
       }
 
+      val clients = store.entry(ReplicaPropagator.ReplicasKey) match {
+        case Some(KeyValueEntry(set, _)) =>
+          val addresses = set.asInstanceOf[ORSet[String]].elements
+
+          clientConnections = clientConnections.filter {
+            case (k, v) => addresses.contains(k)
+          }
+
+          addresses.filter(a => !clientConnections.contains(a)).foreach {
+            case a =>
+              val client = ReplicaClient(a)
+              clientConnections = clientConnections + (a -> client)
+          }
+
+          set.asInstanceOf[ORSet[String]].elements.map(address => ReplicaClient(address))
+        case None => Seq.empty
+      }
+
       clients.foreach {
         case client ⇒
           client.propagate(serialized).onFailure {
             case error ⇒
-              logger.info(s"connection to ${client.hostname}:${client.port} failed with exception", error)
-              client.disconnect
-              clients = clients - client
+              logger.info(s"connection to ${client.address} failed with exception", error)
           }
       }
     }
@@ -53,7 +66,7 @@ case class ReplicaPropagator(store: KeyValueStore, private val initialClients: S
 
   def shutdown: Unit = {
     scheduledFuture.cancel(false)
-    clients.foreach(_.disconnect)
+    clientConnections.foreach(_._2.disconnect)
   }
 
 }

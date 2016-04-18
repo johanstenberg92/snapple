@@ -35,7 +35,7 @@ class ClientIOSpec extends WordSpecLike with Matchers with ScalaFutures with Bef
 
   "A client" must {
     "be able to connect, ping and disconnect" in {
-      val client = SnappleClient.singleHost(host)
+      val client = SnappleClient.singleHost()
 
       client.ping.futureValue should be (())
 
@@ -43,7 +43,7 @@ class ClientIOSpec extends WordSpecLike with Matchers with ScalaFutures with Bef
     }
 
     "be able to connect, create, read and disconnect" in {
-      val client = SnappleClient.singleHost(host)
+      val client = SnappleClient.singleHost()
 
       val key = UUID.randomUUID.toString
 
@@ -57,7 +57,7 @@ class ClientIOSpec extends WordSpecLike with Matchers with ScalaFutures with Bef
     }
 
     "be able to connect, create, modify, read and disconnect" in {
-      val client = SnappleClient.singleHost(host)
+      val client = SnappleClient.singleHost()
 
       val key = UUID.randomUUID.toString
 
@@ -75,7 +75,7 @@ class ClientIOSpec extends WordSpecLike with Matchers with ScalaFutures with Bef
     }
 
     "be able to connect, read, modify and disconnect" in {
-      val client = SnappleClient.singleHost(host)
+      val client = SnappleClient.singleHost()
 
       val key = UUID.randomUUID.toString
 
@@ -86,7 +86,7 @@ class ClientIOSpec extends WordSpecLike with Matchers with ScalaFutures with Bef
     }
 
     "be able to connect, create, remove, read and disconnect" in {
-      val client = SnappleClient.singleHost(host)
+      val client = SnappleClient.singleHost()
 
       val key = UUID.randomUUID.toString
 
@@ -100,7 +100,7 @@ class ClientIOSpec extends WordSpecLike with Matchers with ScalaFutures with Bef
     }
 
     "be able to connect, create, disconnect, connect, read and disconnect" in {
-      var client = SnappleClient.singleHost(host)
+      var client = SnappleClient.singleHost()
 
       val key = UUID.randomUUID.toString
 
@@ -108,7 +108,7 @@ class ClientIOSpec extends WordSpecLike with Matchers with ScalaFutures with Bef
 
       client.disconnect
 
-      client = SnappleClient.singleHost(host)
+      client = SnappleClient.singleHost()
 
       val vv = client.entry(key).futureValue.getOrElse(fail).asVersionVector
 
@@ -118,7 +118,7 @@ class ClientIOSpec extends WordSpecLike with Matchers with ScalaFutures with Bef
     }
 
     "be able to connect, create string orset, modify, read and disconnect" in {
-      val client = SnappleClient.singleHost(host)
+      val client = SnappleClient.singleHost()
 
       val key = UUID.randomUUID.toString
 
@@ -136,8 +136,8 @@ class ClientIOSpec extends WordSpecLike with Matchers with ScalaFutures with Bef
     }
 
     "be able to use two clients at the same time" in {
-      val c1 = SnappleClient.singleHost(host)
-      val c2 = SnappleClient.singleHost(host)
+      val c1 = SnappleClient.singleHost()
+      val c2 = SnappleClient.singleHost()
 
       val k1 = UUID.randomUUID.toString
       val k2 = UUID.randomUUID.toString
@@ -154,7 +154,7 @@ class ClientIOSpec extends WordSpecLike with Matchers with ScalaFutures with Bef
 
     "be able to call multiple methods simultaneously with client" in {
       val size = 50
-      val client = SnappleClient.singleHost(host)
+      val client = SnappleClient.singleHost()
 
       val future = Future.sequence((0 until size).toSeq.map(_ => client.ping))
 
