@@ -80,4 +80,20 @@ object SnappleBuild extends Build {
     settings = ioTestsSettings
   )
 
+  lazy val cliSettings = Seq(
+    libraryDependencies ++= Seq(
+      Dependencies.logbackLogging,
+      Dependencies.scopt
+    ),
+
+    fork in run := true
+  )
+
+  lazy val cli = Project(
+    id = "snapple-cli",
+    base = file("snapple-cli"),
+    dependencies = Seq(client),
+    settings = cliSettings
+  )
+
 }

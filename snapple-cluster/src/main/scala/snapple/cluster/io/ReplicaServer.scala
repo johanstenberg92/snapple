@@ -64,6 +64,10 @@ case class ReplicaServer(store: KeyValueStore, port: Int, replicaIdentifier: Str
       }
     }
 
+    override def getAllEntries(): Future[Map[String, TDataType]] = Future {
+      FinagleMethodHelper.convertAllEntries(store.entries)
+    }
+
   }
 
   def shutdown: Unit = {

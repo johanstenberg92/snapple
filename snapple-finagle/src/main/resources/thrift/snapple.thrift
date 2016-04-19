@@ -35,4 +35,6 @@ service SnappleService {
 
   bool modifyEntry(1: string key, 2: string operation, 3: binary element),
 
+  map<string, TDataType> getAllEntries()
+
 }

@@ -82,4 +82,16 @@ case class SnappleClient(hosts: Seq[(String, Int)]) {
   def getHosts: Future[Set[String]] = entry(SnappleClient.ReplicasKey)
     .map(_.map(_.dataType.asInstanceOf[ORSet[String]].elements).getOrElse(Set.empty))
 
+  def entries: Future[Map[String, SnappleEntry]] = {
+    val twitterFuture = client.getAllEntries.map {
+      case map => map.map {
+        case (k, v) =>
+          val (dataType, elementKind) = DataSerializer.deserialize(v)
+          (k -> SnappleEntry(dataType, elementKind))
+      }.toMap
+    }
+
+    toScalaFuture(twitterFuture)
+  }
+
 }

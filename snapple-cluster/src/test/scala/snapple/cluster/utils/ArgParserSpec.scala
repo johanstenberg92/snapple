@@ -24,7 +24,7 @@ class ArgParserSpec extends WordSpecLike with Matchers {
     "parse optional arguments" in {
       var args = Array("-i", "mustafackim", "-r", "192.168.0.1:1337")
 
-      ArgParser(args) should be (Configuration(9000, "mustafackim", Seq(("192.168.0.1", 1337))))
+      ArgParser(args) should be (Configuration("localhost", 9000, "mustafackim", Seq(("192.168.0.1", 1337))))
     }
   }
 }

@@ -30,10 +30,14 @@ object FinagleMethodHelper {
 
   def convertGetEntry(optionalData: Option[KeyValueEntry]): TOptionalDataType = {
     val serialized = optionalData.map {
-      case KeyValueEntry(dataType, elementType) ⇒ DataSerializer.serialize(dataType, elementType)
+      case KeyValueEntry(dataType, elementKind) ⇒ DataSerializer.serialize(dataType, elementKind)
     }
 
     TOptionalDataType(serialized)
+  }
+
+  def convertAllEntries(map: Map[String, KeyValueEntry]): Map[String, TDataType] = map.map {
+    case (k, KeyValueEntry(d, e)) => (k -> DataSerializer.serialize(d, e))
   }
 
 }

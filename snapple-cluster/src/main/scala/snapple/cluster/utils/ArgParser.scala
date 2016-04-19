@@ -36,6 +36,6 @@ object ArgParser {
 
   def apply(args: Array[String]): Configuration = parser.parse(args, Configuration()) match {
     case Some(config) => config
-    case None => throw new IllegalArgumentException("config couldn't be parsed")
+    case None => sys.exit(-1)
   }
 }

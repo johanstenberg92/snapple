@@ -49,9 +49,7 @@ class ClientIOSpec extends WordSpecLike with Matchers with ScalaFutures with Bef
 
       client.createEntry(key, VersionVectorDataKind, NoElementKind).futureValue should be (true)
 
-      val vv = client.entry(key).futureValue.getOrElse(fail).asVersionVector
-
-      vv.versionAt(identifier) should not be (0)
+      client.entry(key).futureValue.getOrElse(fail)
 
       client.disconnect
     }
@@ -110,9 +108,7 @@ class ClientIOSpec extends WordSpecLike with Matchers with ScalaFutures with Bef
 
       client = SnappleClient.singleHost()
 
-      val vv = client.entry(key).futureValue.getOrElse(fail).asVersionVector
-
-      vv.versionAt(identifier) should not be (0)
+      client.entry(key).futureValue.getOrElse(fail)
 
       client.disconnect
     }
@@ -159,6 +155,25 @@ class ClientIOSpec extends WordSpecLike with Matchers with ScalaFutures with Bef
       val future = Future.sequence((0 until size).toSeq.map(_ => client.ping))
 
       future.futureValue should be ((0 until size).map(_ => ()))
+    }
+
+    "be able to read all entries with client" in {
+      val client = SnappleClient.singleHost()
+
+      val k1 = UUID.randomUUID.toString
+      val k2 = UUID.randomUUID.toString
+
+      val f1 = client.createEntry(k1, ORSetDataKind, StringElementKind)
+      val f2 = client.createEntry(k2, ORSetDataKind, StringElementKind)
+
+      f1.futureValue should be (true)
+      f2.futureValue should be (true)
+
+      val map = client.entries.futureValue
+      map.contains(k1) should be (true)
+      map.contains(k2) should be (true)
+
+      client.disconnect
     }
   }
 }
