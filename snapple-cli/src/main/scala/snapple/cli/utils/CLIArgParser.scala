@@ -8,6 +8,8 @@ object CLIArgParser {
 
   val Ping = "ping"
 
+  val Create = "create"
+
   val Read = "read"
 
   val Delete = "delete"
@@ -37,6 +39,27 @@ object CLIArgParser {
       c.copy(command = Ping)
     } text ("pings the snapple instance, this is the default command which is executed if no other command is provided.")
     note("\n")
+    cmd(Create) action { (_, c) =>
+      c.copy(command = Create)
+    } text ("create a new entry in the snapple instance.") children(
+      opt[String]("key") required() action { (x, c) =>
+        c.copy(key = Some(x))
+      } text ("key to entry to be created."),
+      opt[String]("crdt") required() action { (x, c) =>
+        c.copy(crdt = Some(x))
+      } text ("crdt to be created, must be either *orset* or *versionvector*.")
+      validate { x =>
+        if (x == "orset" || x == "versionvector") success
+        else failure(s"$x not valid crdt")
+      },
+      opt[String]("type") action { (x, c) =>
+        c.copy(elementKind = Some(x))
+      } validate { x =>
+        if (validEntryTypes.contains(x)) success
+        else failure(s"$x is an invalid entry type.")
+      } text ("the type of the elements in the set.")
+    )
+    note("\n")
     cmd(Read) action { (_, c) =>
       c.copy(command = Read)
     } text ("reads an entry from the snapple instance.") children(
@@ -54,7 +77,7 @@ object CLIArgParser {
     )
     note("\n")
     cmd(Modify) action { (_, c) =>
-      c.copy(command = Delete)
+      c.copy(command = Modify)
     } text ("modify an entry in the snapple instance.") children(
       opt[String]("key") required() action { (x, c) =>
         c.copy(key = Some(x))
@@ -82,6 +105,8 @@ object CLIArgParser {
             success
           else
             failure(s"${c.element.get} is not of type ${c.elementKind.get}")
+        } else if (c.command == Create && c.crdt.exists(x => x == "orset") && c.elementKind.isEmpty) {
+          failure("must have valid element type if creating orset")
         } else
           success
       }
