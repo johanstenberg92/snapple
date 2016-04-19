@@ -32,6 +32,8 @@ object ArgParser {
     opt[Int]('d', "initial-propagation-delay") action { (x, c) =>
       c.copy(initialPropagationDelay = x)
     } text(s"seconds before first propagation, default: $DefaultInitialPropagationDelay")
+    note("\n")
+    help("help") text("prints this usage text")
   }
 
   def apply(args: Array[String]): Configuration = parser.parse(args, Configuration()) match {
