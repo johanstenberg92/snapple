@@ -5,6 +5,7 @@ import snapple.cluster.SnappleServer
 import snapple.cluster.utils.Configuration
 
 import snapple.finagle.io._
+import snapple.finagle.utils.FinagleUtils._
 
 import snapple.client.io.SnappleClient
 
@@ -18,6 +19,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import java.util.UUID
 
 class ClientIOSpec extends WordSpecLike with Matchers with ScalaFutures with BeforeAndAfterAll {
+
+  muteLogs
 
   val identifier = "<identifier>"
 

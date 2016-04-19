@@ -5,6 +5,7 @@ import snapple.cli.utils.{CLIArgParser, IOFutureHelper}
 import snapple.client.io.SnappleClient
 
 import snapple.finagle.io._
+import snapple.finagle.utils.FinagleUtils._
 
 import scala.util.{Success, Failure}
 
@@ -13,6 +14,8 @@ object Main {
   import CLIArgParser._
 
   def main(args: Array[String]): Unit = {
+    muteLogs
+
     val config = CLIArgParser(args)
 
     val client = SnappleClient.singleHost(config.host, config.port)

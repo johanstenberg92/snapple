@@ -4,6 +4,8 @@ import com.twitter.util.{Future => TwitterFuture, Throw, Return}
 
 import scala.concurrent.{Future, Promise}
 
+import java.util.logging.LogManager
+
 object FinagleUtils {
   def toScalaFuture[A](twitterFuture: TwitterFuture[A]): Future[A] = {
     val promise = Promise[A]()
@@ -14,5 +16,9 @@ object FinagleUtils {
     }
 
     promise.future
+  }
+
+  def muteLogs: Unit = {
+    LogManager.getLogManager.reset
   }
 }
