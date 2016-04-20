@@ -84,10 +84,10 @@ private class SnappleLoadBalancer[Req, Rep](
           case _ =>
             synchronized {
               var res = -1
-              var idx = currentNode + 1
 
               var rounds = 0
               var upSize = up.size
+              var idx = (currentNode + 1) % upSize
 
               while (res == -1 && rounds < upSize) {
                 if (up(idx).isAvailable) res = idx

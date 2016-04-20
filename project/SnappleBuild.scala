@@ -96,4 +96,20 @@ object SnappleBuild extends Build {
     settings = cliSettings
   )
 
+  lazy val benchmarkSettings = Seq(
+    libraryDependencies ++= Seq(
+      Dependencies.logbackLogging,
+      Dependencies.scopt
+    ),
+
+    fork in run := true
+  )
+
+  lazy val benchmark = Project(
+    id = "snapple-benchmark",
+    base = file("snapple-benchmark"),
+    dependencies = Seq(client),
+    settings = benchmarkSettings
+  )
+
 }

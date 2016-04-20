@@ -24,7 +24,8 @@ case class ReplicaServer(store: KeyValueStore, port: Int, replicaIdentifier: Str
 
   private val opHandler: OpHandler = OpHandler(replicaIdentifier)
 
-  private val server = Thrift.serveIface(s"localhost:$port", SnappleServiceHandler(store))
+  private val server = Thrift
+    .serveIface(s"localhost:$port", SnappleServiceHandler(store))
 
   private case class SnappleServiceHandler(store: KeyValueStore) extends SnappleService[Future] {
 
