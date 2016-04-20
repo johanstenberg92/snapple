@@ -32,7 +32,7 @@ object Main {
 
     val client = SnappleClient.singleHost(config.host, config.port)
 
-    val futureHelper = IOFutureHelper(config.host , config.port)
+    val futureHelper = IOFutureHelper(config.host, config.port)
 
     futureHelper.get(client.ping)
 
@@ -79,11 +79,12 @@ object Main {
 
     clients.foreach(_.disconnect)
 
-    val latencies = statsReceiver.stat("request_latency_ms")()
+    val latencies = statsReceiver.stat("request_latency_ms")().sorted.reverse.drop(1)
 
     val times = (1 to 10).map {
       case t =>
-        (t -> decimalFormat.format(((latencies.filter(_ < t).size * 100) / requests)))
+        val v = (latencies.filter(_ <= t).size * 100.toDouble) / (requests - 1)
+        (t -> decimalFormat.format(v))
     }
 
     val threadString = if (parallel) "parallel" else "sequential"

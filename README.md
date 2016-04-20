@@ -10,6 +10,12 @@ Each entry in the key-value store is represented by a `String` key and a `CRDT` 
 
 Currently only two types of CRDTs are supported, OR-Sets and [Version Vectors](https://en.wikipedia.org/wiki/Version_vector). Worth to note is that this project uses Marc Shapiro's optimized [OR-sets implementation](https://pages.lip6.fr/Marc.Shapiro/papers/RR-8083.pdf), allowing for better memory complexity.
 
+## Waffle Graph
+
+Waffle is used for issue management.
+
+[![Throughput Graph](https://graphs.waffle.io/johanstenberg92/snapple/throughput.svg)](https://waffle.io/johanstenberg92/snapple/metrics)
+
 ## Subprojects
 
 ### CRDTs
@@ -28,10 +34,7 @@ The `snapple-client` subproject provides an API for external clients to communic
 The `snapple-io-tests` subproject provides extensive IO tests for client-server communication and CRDT propagation between replicas. It also tests redundancy and adding / removing replicas.
 
 ### CLI
-The `snapple-cli` provides a CLI tool to modify a snapple instance, usable to, for example, add or remove replicas manually.
+The `snapple-cli` provides a CLI tool to modify a snapple instance, usable to, for example, add or remove replicas manually. Provide the `--help` flag to find out how to use it.
 
-## Waffle Graph
-
-Waffle is used for issue management.
-
-[![Throughput Graph](https://graphs.waffle.io/johanstenberg92/snapple/throughput.svg)](https://waffle.io/johanstenberg92/snapple/metrics)
+### Benchmark
+The `snapple-benchmark` provides a CLI tool to benchmark a snapple's performance, requests can be sent both in parallel and sequentially. Provide the `--help` flag to find out how to use it.
