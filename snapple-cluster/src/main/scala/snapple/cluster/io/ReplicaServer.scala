@@ -14,9 +14,9 @@ import com.twitter.finagle.Thrift
 
 import com.twitter.util.Future
 
-import scala.collection.{Map => SMap}
-
 import java.nio.ByteBuffer
+
+import scala.collection.{Map => SMap}
 
 case class ReplicaServer(store: KeyValueStore, port: Int, replicaIdentifier: String) {
 
@@ -25,6 +25,7 @@ case class ReplicaServer(store: KeyValueStore, port: Int, replicaIdentifier: Str
   private val opHandler: OpHandler = OpHandler(replicaIdentifier)
 
   private val server = Thrift
+    .server
     .serveIface(s"localhost:$port", SnappleServiceHandler(store))
 
   private case class SnappleServiceHandler(store: KeyValueStore) extends SnappleService[Future] {

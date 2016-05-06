@@ -10,7 +10,7 @@ object BenchmarkArgParser {
 
   val DefaultRequests = 100000
 
-  val DefaultByteSize = 2
+  val DefaultByteSize = 10
 
   val DefaultKeys = 1
 
@@ -33,7 +33,10 @@ object BenchmarkArgParser {
     } text(s"number of clients, default: $DefaultClients. Note here each client only has 1 thread in pool usually finagle default.")
     opt[Int]('r', "requests") action { (x, c) =>
       c.copy(requests = x)
-    } text(s"number of requests. Each request sends a v4 UUID of 36 bytes. Default: $DefaultRequests.")
+    } text(s"number of requests. Default: $DefaultRequests.")
+    opt[Int]('d', "bytes") action { (x, c) =>
+      c.copy(byteSize = x)
+    } text(s"number of bytes in requests, default: $DefaultByteSize.")
     opt[Int]('k', "keys") action { (x, c) =>
       c.copy(keys = x)
     } text(s"number of keys used, each entry is an OR-Set, default: $DefaultKeys.")

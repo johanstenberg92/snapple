@@ -26,14 +26,13 @@ case class SnappleBenchmarkClient(host: String, port: Int, statsReceiver: InMemo
 
   private val statsFilter = new StatsFilter[ThriftClientRequest, Array[Byte]](statsReceiver)
 
-  private val balancer = SnappleLoadBalancer()
-
   private val serviceFactory: ServiceFactory[ThriftClientRequest, Array[Byte]] =
     Thrift
       .client
       .withSessionPool
       .maxSize(1)
-      .withLoadBalancer(balancer)
+      .withSessionPool
+      .minSize(1)
       .newClient(s"$host:$port")
 
   private val service: Service[ThriftClientRequest, Array[Byte]] = serviceFactory.toService
@@ -46,10 +45,26 @@ case class SnappleBenchmarkClient(host: String, port: Int, statsReceiver: InMemo
     serviceFactory.close
   }
 
+  def createEntry(key: String, dataKind: DataKind, elementKind: ElementKind): Future[Boolean] =
+    toScalaFuture(client.createEntry(key, dataKind.id, elementKind.id))
+
   def modifyEntry(key: String, operation: OpKind, value: Option[Any] = None): Future[Boolean] = {
     val bb = value.map(DataSerializer.serializeElement).getOrElse(ByteBuffer.allocate(0))
 
     toScalaFuture(client.modifyEntry(key, operation.id, bb))
+  }
+
+  def entry(key: String): Future[Boolean] = {
+    val twitterFuture = client.getEntry(key).map {
+      case TOptionalDataType(Some(v)) =>
+        val (dataType, elementKind) = DataSerializer.deserialize(v)
+        Some(SnappleEntry(dataType, elementKind))
+
+        true
+      case _ => false
+    }
+
+    toScalaFuture(twitterFuture)
   }
 
 }

@@ -14,6 +14,8 @@ object Dependencies {
     val Logback = "1.1.7"
 
     val Finagle = "6.34.0"
+
+    val ApacheCommons = "3.4"
   }
 
   val scalaTest = "org.scalatest" %% "scalatest" % Versions.ScalaTest % "test"
@@ -25,4 +27,6 @@ object Dependencies {
   val logbackLogging = "ch.qos.logback" % "logback-classic" % Versions.Logback
 
   val finagleThrift = "com.twitter" %% "finagle-thrift" % Versions.Finagle
+
+  val apacheCommons = "org.apache.commons" % "commons-lang3" % Versions.ApacheCommons
 }

@@ -47,7 +47,9 @@ object SnappleBuild extends Build {
     libraryDependencies ++= Seq(
       Dependencies.logbackLogging,
       Dependencies.scopt
-    )
+    ),
+
+    fork in run := true
   )
 
   lazy val cluster = Project(
@@ -99,7 +101,8 @@ object SnappleBuild extends Build {
   lazy val benchmarkSettings = Seq(
     libraryDependencies ++= Seq(
       Dependencies.logbackLogging,
-      Dependencies.scopt
+      Dependencies.scopt,
+      Dependencies.apacheCommons
     ),
 
     fork in run := true
