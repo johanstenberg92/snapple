@@ -10,6 +10,8 @@ Each entry in the key-value store is represented by a `String` key and a `CRDT` 
 
 Currently only two types of CRDTs are supported, OR-Sets and [Version Vectors](https://en.wikipedia.org/wiki/Version_vector). Worth to note is that this project uses Marc Shapiro's optimized [OR-sets implementation](https://pages.lip6.fr/Marc.Shapiro/papers/RR-8083.pdf), allowing for better memory complexity.
 
+Another way to learn about Snapple is to check out the slides for my Master's Thesis [here](https://dl.dropboxusercontent.com/u/42266515/presentation-thesis.pdf).
+
 ## Waffle Graph
 
 Waffle is used for issue management.
